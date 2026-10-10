@@ -65,7 +65,7 @@ export default function Overview() {
             <div className="strip-title">Welcome back, {user.name.split(' ')[0]}</div>
           </div>
           <span className="spacer" />
-          <div className="row wrap" style={{ justifyContent: 'flex-end' }}>
+          <div className="row">
             <Btn variant="primary" icon={I.MousePointerClick} onClick={() => go('/editor')}>Create a patch</Btn>
             <Btn icon={I.GitPullRequestDraft} onClick={() => go('/patches')}>{c.review ? `Review ${c.review}` : 'Patches'}</Btn>
             <Btn icon={I.Rocket} onClick={() => go('/releases')}>Releases</Btn>
@@ -82,7 +82,7 @@ export default function Overview() {
 
         <div className="dash-grid">
           {/* 1 — pipeline, full width */}
-          <Card className="span2" title="Patch pipeline" icon={I.Workflow} sub="Every change moves through the same safe path">
+          <Card className="span2 pipe-card" title="Patch pipeline" icon={I.Workflow} sub="Every change moves through the same safe path">
             <div className="pipe">
               {stages.map((s, i) => (
                 <div key={s.k} className="pipe-wrap">
@@ -164,7 +164,7 @@ export default function Overview() {
               {feed.length === 0 ? <div className="muted" style={{ padding: 20 }}>No activity yet.</div> : feed.map((a) => {
                 return (
                   <div key={a.key} className="act-row">
-                    <AuditIcon type={a.type} size={36} />
+                    <AuditIcon type={a.type} size={39} />
                     <div className="act-text">{a.count > 1 ? <><b>{a.count} automatic drift checks</b> — latest: {a.text.replace(/^Drift check #\d+: /, '')}</> : a.text}</div>
                     <div className="act-time">{ago(a.ts)}</div>
                   </div>

@@ -4,9 +4,10 @@
 
 ### Studio
 - **Overview redesigned as a full-width dashboard.** The page now uses the whole window (up to 2,200px) instead of a centred ~1,380px column.
-  - Slim welcome strip replaces the tall banner: large 40px heading and large action buttons, no subtext.
+  - Welcome box: centred heading with three large rectangular action buttons beneath it (no subtext), sized taller than the pipeline box.
   - Compact, centred KPI tiles in one row (2×2 below 1,200px), with shorter labels.
-  - **Patch pipeline** has its own full-width row with larger stage tiles.
+  - **Patch pipeline** has its own full-width row (compact stage tiles).
+  - Cards, tiles, metrics, rows and text are ~6–10% larger for readability; KPI tiles switch to 2×2 below 1,320px.
   - Two roomy columns: Production health (2×2 metrics) + Element tracking, then Review queue + Demo controls.
   - **Recent activity** moved to the bottom at full width and shows the last 5 events.
   - Generous spacing and larger text; card headers wrap their buttons instead of squeezing titles; better dark-theme contrast for secondary text.

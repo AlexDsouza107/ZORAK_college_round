@@ -327,7 +327,7 @@ table.tbl { width: 100%; border-collapse: collapse; }
 
 /* ===== KPI tiles: compact, one row, content centred ===== */
 .dash-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-@media (max-width: 1200px) { .dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1320px) { .dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .kpi { padding: 16px 14px; gap: 14px; justify-content: center; text-align: left; min-height: 92px; }
 .kpi > div:last-child { min-width: 0; }
 .kpi-ico { width: 46px; height: 46px; border-radius: 13px; }
@@ -342,3 +342,48 @@ table.tbl { width: 100%; border-collapse: collapse; }
 .dash .strip .btn { font-size: 17px; font-weight: 600; padding: 15px 28px; border-radius: 14px; gap: 10px; }
 .dash .strip .btn svg { width: 20px; height: 20px; }
 @media (max-width: 1200px) { .dash .strip .btn { font-size: 16px; padding: 13px 22px; } }
+
+/* ===== Welcome box (title above buttons) and pipeline share one height ===== */
+.dash { --hero-h: 230px; --strip-h: 281px; }   /* welcome box = pipeline height +15% +15% */
+.dash .strip { flex-direction: column; align-items: flex-start; justify-content: center; gap: 24px; padding: 34px 38px; min-height: var(--strip-h); }
+.dash .strip .spacer { display: none; }
+.dash .strip-title { font-size: clamp(32px, 3vw, 46px); }
+.dash .strip > .row { justify-content: flex-start; flex-wrap: nowrap; gap: 14px; }
+@media (max-width: 760px) { .dash .strip > .row { flex-wrap: wrap; } }
+
+/* smaller pipeline */
+.dash .pipe-card { min-height: var(--hero-h); }
+.dash .pipe-card .card-head { padding: 16px 26px 0; }
+.dash .pipe-card .card-body { padding: 12px 26px 20px; }
+.dash .pipe { gap: 6px; }
+.dash .pipe-stage { padding: 14px 20px; border-radius: 12px; }
+.dash .pipe-n { font-size: 34px; margin: 4px 0 10px; line-height: 1.1; }
+.dash .pipe-top { font-size: 15px; }
+.dash .pipe-bar { height: 5px; }
+
+/* ===== Welcome box: centred title + large rectangular buttons ===== */
+.dash .strip { align-items: center; text-align: center; }
+.dash .strip > .row { width: 100%; max-width: 880px; justify-content: center; flex-wrap: nowrap; gap: 16px; }
+.dash .strip .btn { flex: 0 1 240px; min-width: 0; justify-content: center; font-size: 18px; font-weight: 600; padding: 17px 20px; border-radius: 10px; gap: 12px; white-space: nowrap; }
+.dash .strip .btn svg { width: 21px; height: 21px; }
+@media (max-width: 760px) { .dash .strip > .row { flex-wrap: wrap; } .dash .strip .btn { flex: 1 1 100%; } }
+
+/* ===== Overview: everything except the welcome box ~8% larger ===== */
+.dash { font-size: 16px; }
+.dash .muted { font-size: 15.5px; } .dash .small { font-size: 15px; } .dash .tiny { font-size: 14px; }
+.dash .card-head { padding: 22px 26px 0; } .dash .card-head h3 { font-size: 22px; }
+.dash .card-body { padding: 18px 26px 26px; }
+.dash .card .btn { font-size: 15px; padding: 8px 18px; } .dash .card .btn.sm { font-size: 14.5px; padding: 6px 14px; }
+
+.kpi { padding: 18px 16px; gap: 15px; min-height: 100px; }
+.kpi-ico { width: 50px; height: 50px; border-radius: 14px; }
+.kpi-label { font-size: 13px; } .kpi-value { font-size: 35px; } .kpi-sub { font-size: 14.5px; }
+
+.dash .pipe-card .card-head { padding: 18px 28px 0; } .dash .pipe-card .card-body { padding: 14px 28px 22px; }
+.dash .pipe-stage { padding: 15px 22px; } .dash .pipe-n { font-size: 37px; margin: 4px 0 10px; } .dash .pipe-top { font-size: 16px; } .dash .pipe-bar { height: 6px; }
+
+.metric { padding: 18px 20px; } .metric-v { font-size: 33px; margin: 7px 0 5px; } .metric-s { font-size: 15px; }
+.note { padding: 14px 16px; font-size: 15px; }
+.chip { font-size: 16px; padding: 6px 9px 6px 6px; }
+.track-row { padding: 14px 18px; font-size: 16px; }
+.activity { padding: 8px 26px 16px; } .act-row { padding: 15px 0; } .act-text { font-size: 16px; } .act-time { font-size: 14.5px; }
