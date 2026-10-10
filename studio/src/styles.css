@@ -184,3 +184,44 @@ table.tbl { width: 100%; border-collapse: collapse; }
 .seg button { white-space: nowrap; }
 .ed-right .eyebrow { white-space: nowrap; }
 .compare .top img { height: auto; }
+
+/* user menu: opens upward, exactly as wide as the sidebar footer */
+.menu.up { top: auto; bottom: calc(100% + 8px); left: 0; right: auto; min-width: 214px; }
+.menu.up button { white-space: nowrap; }
+.sidebar-foot { min-width: 0; }
+.sidebar-foot .row { min-width: 0; flex-wrap: nowrap; }
+.sidebar-foot .btn.ghost { overflow: hidden; }
+.sidebar-foot .btn.ghost > span { min-width: 0; }
+
+/* sidebar: nav scrolls, footer (user switcher) always pinned and visible */
+.sidebar { overflow: hidden; }
+.sidebar .nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; margin: 0 -6px; padding: 0 6px; }
+.sidebar .nav::-webkit-scrollbar { width: 6px; }
+.sidebar-foot { flex-shrink: 0; margin-top: 0; background: var(--surface); }
+@media (max-height: 780px) {
+  .sidebar { padding: 12px 12px; gap: 4px; }
+  .brand { padding: 0 8px 8px; } .brand-sub { display: none; }
+  .site-switch { padding: 7px 10px; margin-bottom: 4px; }
+  .nav-label { padding: 8px 12px 2px; } .nav a { padding: 6px 12px; }
+  .sidebar-foot { padding-top: 8px; gap: 6px; }
+}
+@media (max-width: 1100px) { .app { grid-template-columns: 210px 1fr; } .topbar { padding: 12px 18px; } .content { padding: 20px 18px 50px; } }
+
+/* editor page: collapse the sidebar to an icon rail on laptop-sized screens so the canvas gets the room */
+@media (max-width: 1560px) {
+  .app.rail { grid-template-columns: 68px 1fr; }
+  .rail .sidebar { padding: 12px 8px; align-items: center; }
+  .rail .brand { padding: 0 0 10px; } .rail .brand > div:last-child { display: none; }
+  .rail .site-switch { padding: 6px; margin: 0 0 6px; justify-content: center; } .rail .site-switch > :not(.site-dot) { display: none; }
+  .rail .nav { margin: 0; padding: 0; width: 100%; } .rail .nav-label { font-size: 0; padding: 6px 0; border-top: 1px solid var(--line); margin-top: 6px; height: 1px; }
+  .rail .nav a { font-size: 0; justify-content: center; padding: 10px 0; } .rail .nav a .count { display: none; } .rail .nav a svg { flex-shrink: 0; }
+  .rail .sidebar-foot { width: 100%; align-items: center; padding-left: 0; padding-right: 0; }
+  .rail .sidebar-foot > .row.small { display: none; }
+  .rail .sidebar-foot .row { flex-direction: column; gap: 4px; width: 100%; }
+  .rail .sidebar-foot .btn.ghost { justify-content: center; padding: 6px; } .rail .sidebar-foot .btn.ghost > span:not(.avatar), .rail .sidebar-foot .btn.ghost > svg { display: none; }
+}
+.app.rail .sidebar { overflow: visible; position: relative; z-index: 90; }
+
+/* the drawer's click-away backdrop must sit BELOW the drawer (was above it, blurring and blocking its buttons) */
+.overlay.drawer-backdrop { z-index: 65; display: block; background: rgba(20,18,30,.2); backdrop-filter: none; }
+.drawer { z-index: 70; }

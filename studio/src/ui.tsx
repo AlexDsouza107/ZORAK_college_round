@@ -39,7 +39,7 @@ export function Modal({ title, sub, children, foot, onClose, wide }: any) {
 }
 export function Drawer({ title, sub, children, onClose, actions }: any) {
   useEffect(() => { const h = (e: KeyboardEvent) => e.key === 'Escape' && onClose?.(); addEventListener('keydown', h); return () => removeEventListener('keydown', h); }, [onClose]);
-  return <><div className="overlay" style={{ background: 'rgba(20,18,30,.18)', display: 'block' }} onMouseDown={onClose} />
+  return <><div className="overlay drawer-backdrop" onMouseDown={onClose} />
     <aside className="drawer"><div className="ed-panel-head" style={{ padding: '18px 22px' }}><div style={{ minWidth: 0 }}><h3 className="trunc">{title}</h3>{sub && <div className="small muted">{sub}</div>}</div><span className="spacer" />{actions}<Btn variant="ghost" size="sm" icon={I.X} onClick={onClose} /></div>
       <div className="ed-scroll" style={{ padding: 22 }}>{children}</div></aside></>;
 }
@@ -63,10 +63,10 @@ export function Page({ title, sub, actions, children, flush }: any) {
   return <><div className="topbar"><div><h1>{title}</h1>{sub && <div className="sub">{sub}</div>}</div><span className="spacer" />{actions}</div>
     <div className={`content ${flush ? 'flush' : ''}`}>{flush ? children : <div className="page">{children}</div>}</div></>;
 }
-export function Menu({ trigger, children }: { trigger: (open: boolean, toggle: () => void) => ReactNode; children: (close: () => void) => ReactNode }) {
+export function Menu({ trigger, children, up, block }: { trigger: (open: boolean, toggle: () => void) => ReactNode; children: (close: () => void) => ReactNode; up?: boolean; block?: boolean }) {
   const [open, setOpen] = useState(false); const ref = useRef<HTMLDivElement>(null);
   useEffect(() => { const h = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); }; addEventListener('mousedown', h); return () => removeEventListener('mousedown', h); }, []);
-  return <div ref={ref} style={{ position: 'relative' }}>{trigger(open, () => setOpen(!open))}{open && <div className="menu">{children(() => setOpen(false))}</div>}</div>;
+  return <div ref={ref} style={{ position: 'relative', ...(block ? { flex: 1, minWidth: 0 } : {}) }}>{trigger(open, () => setOpen(!open))}{open && <div className={`menu ${up ? 'up' : ''}`}>{children(() => setOpen(false))}</div>}</div>;
 }
 export function Confirm({ title, body, confirm = 'Confirm', danger, onYes, onNo, children }: any) {
   const [reason, setReason] = useState('');

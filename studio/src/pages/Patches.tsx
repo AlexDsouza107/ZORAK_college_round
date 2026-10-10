@@ -135,7 +135,8 @@ function ConflictsPanel({ conflicts, reload }: { conflicts: any[]; reload: () =>
   const { toast, userOf } = useApp();
   const [ai, setAi] = useState<Record<string, any>>({});
   const [custom, setCustom] = useState<Record<string, string>>({});
-  const list = conflicts.filter((c) => c.severity !== 'low' || c.kind === 'duplicate');
+  const ORDER: Record<string, number> = { collision: 0, 'target-removed': 1, 'missing-dependency': 2, 'ancestor-removed': 3, duplicate: 4 };
+  const list = conflicts.filter((c) => c.severity !== 'low' || c.kind === 'duplicate').sort((a, b) => (ORDER[a.kind] ?? 9) - (ORDER[b.kind] ?? 9));
   if (!list.length) return <Card><Empty icon={I.GitMerge} title="No conflicts">Patches that touch the same element and property, remove a container another patch needs, or depend on something missing show up here.</Empty></Card>;
 
   const resolve = (c: any, strategy: string, customValue?: string) => run('r' + c.id + strategy, async () => { await api('/conflicts/resolve', 'POST', { conflict: c, strategy, customValue }); reload(); }, 'Conflict resolved — affected patches were sent back to draft for re-review');

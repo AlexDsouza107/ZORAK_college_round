@@ -19,7 +19,9 @@
     "test": "node --disable-warning=ExperimentalWarning scripts/test-core.mjs",
     "extension": "node scripts/build-extension.mjs",
     "test:all": "node scripts/test-core.mjs && node scripts/test-editor.mjs && node scripts/test-story.mjs && node scripts/test-extension.mjs",
-    "docs": "node docs/build-manual.cjs"
+    "docs": "node docs/build-manual.cjs && node docs/build-demo-guide.cjs",
+    "demo:prep": "node scripts/demo-prep.mjs",
+    "test:demo": "npm run demo:prep && node scripts/test-demo-ui.mjs"
   },
   "devDependencies": {
     "docx": "^9.9.0"
