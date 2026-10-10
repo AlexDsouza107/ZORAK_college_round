@@ -3,8 +3,8 @@ import { useSpotlight } from '../hooks/useSpotlight';
 
 const STATS = [
   { v: '0', l: 'full-site redeploys', d: 'The origin is never modified.' },
-  { v: '84%', l: 'self-heal confidence', d: 'Measured after a full redesign shipped.' },
-  { v: '17+', l: 'automated checks', d: 'Per release, on desktop and mobile.' },
+  { v: 'Multi-signal', l: 'self-heal locator', d: 'Text, role, attributes and position, scored together.' },
+  { v: '7', l: 'check types', d: 'Console, network, a11y, visual, blast radius, apply, flows.' },
   { v: 'SHA-256', l: 'sealed audit chain', d: 'Every action is tamper-evident.' }
 ];
 

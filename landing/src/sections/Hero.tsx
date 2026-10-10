@@ -36,7 +36,7 @@ export default function Hero() {
   const open = BROKEN_COUNT - patched, allFixed = open === 0;
 
   return (
-    <section id="top" ref={ref} className="relative isolate overflow-hidden pb-16 pt-28 lg:pb-24 lg:pt-32">
+    <section id="top" ref={ref} className="relative isolate overflow-hidden pb-16 pt-32 lg:pb-24 lg:pt-40">
       <div aria-hidden className="grid-bg pointer-events-none absolute inset-0 -z-10" />
       <div className="mx-auto w-full max-w-[1264px] px-5 sm:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.1fr] lg:gap-14">
