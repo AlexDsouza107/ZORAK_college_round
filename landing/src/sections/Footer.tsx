@@ -65,7 +65,7 @@ export default function Footer() {
           <span role="status" className={cn('inline-flex items-center gap-2.5 rounded-md border px-3 py-1.5 font-mono text-[11.5px] font-medium', status === 'up' ? 'border-accent-line bg-accent-soft text-accent-deep' : 'border-neutral-300 bg-panel text-neutral-700')}>
             <span className="relative flex h-2 w-2"><span className={cn('absolute inline-flex h-full w-full rounded-full opacity-60', status === 'up' ? 'animate-ping bg-accent' : 'hidden')} /><span className={cn('relative inline-flex h-2 w-2 rounded-full', status === 'up' ? 'bg-accent' : status === 'down' ? 'bg-neutral-400' : 'animate-pulse bg-neutral-400')} /></span>{label}
           </span>
-          <span className="font-mono text-[11.5px] text-neutral-600">v1.0.1 · © 2026 PATCHWORK · Built for the CRCE hackathon round</span>
+          <span className="font-mono text-[11.5px] text-neutral-600">v1.0.3 · © 2026 PATCHWORK · Built for the CRCE hackathon round</span>
         </div>
       </div>
     </footer>
