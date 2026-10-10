@@ -30,7 +30,7 @@ export default function Patches() {
   const sendTo = (path: string) => { sessionStorage.setItem('pw.selection', JSON.stringify([...selected])); go(path); };
 
   return (
-    <Page title="Patches" sub="Propose, review and resolve changes before anything reaches production"
+    <Page big title="Patches"
       actions={<>{selected.size > 0 && <><span className="small muted">{selected.size} selected</span><Btn icon={I.ShieldCheck} onClick={() => sendTo('/verify')}>Verify</Btn><Btn variant="primary" icon={I.Rocket} onClick={() => sendTo('/releases')}>Build release</Btn></>}
         <Btn variant="primary" icon={I.Plus} onClick={() => go('/editor')}>New patch</Btn></>}>
       <div className="col gap-lg">

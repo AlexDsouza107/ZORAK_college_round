@@ -283,3 +283,7 @@ table.tbl { width: 100%; border-collapse: collapse; }
 .act-text { font-size: 13.5px; line-height: 1.4; color: var(--ink); }
 .act-time { font-size: 12px; color: var(--muted); white-space: nowrap; padding-top: 2px; }
 .strip > .row { flex-wrap: nowrap; flex-shrink: 0; }
+
+/* larger, higher-contrast page title (used on Patches) */
+.topbar.big { padding-top: 18px; padding-bottom: 18px; }
+.topbar.big h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; color: var(--ink); }

@@ -59,8 +59,8 @@ export function Conf({ v }: { v?: number | null }) {
   const c = v >= 0.95 ? 'var(--good)' : v >= 0.7 ? 'var(--accent)' : v >= 0.5 ? 'var(--warn)' : 'var(--bad)';
   return <span className="conf"><span className="bar"><i style={{ width: `${v * 100}%`, background: c }} /></span><b style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.round(v * 100)}%</b></span>;
 }
-export function Page({ title, sub, actions, children, flush, wide }: any) {
-  return <><div className="topbar"><div><h1>{title}</h1>{sub && <div className="sub">{sub}</div>}</div><span className="spacer" />{actions}</div>
+export function Page({ title, sub, actions, children, flush, wide, big }: any) {
+  return <><div className={`topbar ${big ? 'big' : ''}`}><div><h1>{title}</h1>{sub && <div className="sub">{sub}</div>}</div><span className="spacer" />{actions}</div>
     <div className={`content ${flush ? 'flush' : ''}`}>{flush ? children : <div className={`page ${wide ? 'wide' : ''}`}>{children}</div>}</div></>;
 }
 export function Menu({ trigger, children, up, block }: { trigger: (open: boolean, toggle: () => void) => ReactNode; children: (close: () => void) => ReactNode; up?: boolean; block?: boolean }) {

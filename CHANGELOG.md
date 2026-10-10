@@ -9,6 +9,7 @@
 - New **Review queue** card (in review, approved and drafts) and a per-patch list under **Element tracking**.
 - Health metrics reflow into a 2×2 grid when the card is narrow.
 - Better dark-theme contrast for secondary text.
+- **Patches page:** removed the subtitle under the heading, and made the page title larger and bolder (36px, full contrast).
 
 ### Housekeeping
 - The demo admin user is now named **Alex Dsouza** in the app, the seeded audit trail and the manual.
