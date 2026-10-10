@@ -1,0 +1,27 @@
+{
+  "name": "patchwork",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PATCHWORK - Hotfix the Internet. Patch live websites without rebuilding them.",
+  "type": "module",
+  "workspaces": [
+    "server",
+    "studio",
+    "demo-site"
+  ],
+  "scripts": {
+    "setup": "npm install && npx playwright install chromium",
+    "build": "npm run build -w studio",
+    "start": "node --disable-warning=ExperimentalWarning scripts/start.mjs",
+    "demo": "npm run build && npm start",
+    "dev": "node --disable-warning=ExperimentalWarning scripts/start.mjs --dev",
+    "reset": "node scripts/reset.mjs",
+    "test": "node --disable-warning=ExperimentalWarning scripts/test-core.mjs",
+    "extension": "node scripts/build-extension.mjs",
+    "test:all": "node scripts/test-core.mjs && node scripts/test-editor.mjs && node scripts/test-story.mjs && node scripts/test-extension.mjs",
+    "docs": "node docs/build-manual.cjs"
+  },
+  "devDependencies": {
+    "docx": "^9.9.0"
+  }
+}
