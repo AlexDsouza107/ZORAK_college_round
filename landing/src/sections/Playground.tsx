@@ -93,7 +93,7 @@ export default function Playground() {
                 const done = stage > i, active = stage === i && phase === 'running';
                 return (
                   <li key={s.id} className="flex items-center gap-1.5">
-                    <span className={cn('flex items-center gap-1.5 rounded-md border px-2 py-1 font-mono text-[11px] font-medium transition-colors duration-300', done ? 'border-accent-line bg-accent-soft text-accent-deep' : active ? 'border-neutral-900 bg-white text-neutral-900' : 'border-neutral-200 bg-white text-neutral-500')}>
+                    <span className={cn('flex items-center gap-1.5 rounded-md border px-2 py-1 font-mono text-[11px] font-medium transition-colors duration-300', done ? 'border-accent-line bg-accent-soft text-accent-deep' : active ? 'border-neutral-900 bg-panel text-neutral-900' : 'border-neutral-200 bg-panel text-neutral-500')}>
                       {done ? <Check size={11} strokeWidth={3} /> : active ? <Loader2 size={11} className="animate-spin" /> : <span className="text-[10px]">0{i + 1}</span>}{s.id}
                       <span className={cn('hidden tabular-nums sm:inline', done ? 'text-accent-deep/70' : 'text-neutral-400')}>{done ? s.ms : ''}</span>
                     </span>
@@ -106,7 +106,7 @@ export default function Playground() {
 
           <div className="grid gap-px bg-neutral-200/80 lg:grid-cols-12">
             {/* storefront + response status */}
-            <div className="space-y-5 bg-white p-6 lg:col-span-5 lg:p-8">
+            <div className="space-y-5 bg-panel p-6 lg:col-span-5 lg:p-8">
               <div className="mono-label flex items-center justify-between"><span>shop.example.com/checkout</span><span className="normal-case tracking-normal text-neutral-600">&lt;button.checkout&gt;</span></div>
               <div className="inset p-5">
                 <div className="space-y-2.5 text-[14px] text-neutral-700">
@@ -118,7 +118,7 @@ export default function Playground() {
                 </div>
                 <div className="relative mt-5">
                   <motion.button type="button" tabIndex={-1} aria-disabled={!fixed} animate={fixed ? { rotate: 0, x: 0 } : { rotate: -1, x: 12 }} transition={spring}
-                    className={cn('block w-full select-none px-5 py-3.5 text-[15px] font-medium transition-[background-color,color,opacity] duration-500', fixed ? 'bg-ink text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]' : 'cursor-not-allowed bg-neutral-300 text-white opacity-70')} style={{ borderRadius: fixed ? 10 : 4 }}>
+                    className={cn('block w-full select-none px-5 py-3.5 text-[15px] font-medium transition-[background-color,color,opacity] duration-500', fixed ? 'bg-ink text-canvas shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]' : 'cursor-not-allowed bg-neutral-300 text-white opacity-70')} style={{ borderRadius: fixed ? 10 : 4 }}>
                     <span className={cn('inline-flex items-center justify-center gap-2', !fixed && 'max-w-[7rem] whitespace-normal text-center leading-tight')}>{fixed && <Check size={15} className="text-accent-bright" />}Place order</span>
                   </motion.button>
                 </div>
@@ -144,7 +144,7 @@ export default function Playground() {
             </div>
 
             {/* telemetry */}
-            <div className="space-y-4 bg-white p-6 lg:col-span-7 lg:p-8">
+            <div className="space-y-4 bg-panel p-6 lg:col-span-7 lg:p-8">
               <div className="mono-label flex items-center justify-between"><span>Real-time telemetry</span><span className="flex items-center gap-1.5 normal-case tracking-normal"><Dot tone="accent" pulse />live · 8 Hz</span></div>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {tiles.map((t) => (
@@ -163,19 +163,19 @@ export default function Playground() {
           </div>
 
           {/* terminal */}
-          <div className="border-t border-neutral-200/80 bg-neutral-950 px-5 py-4 font-mono text-[12px] leading-[1.7] text-neutral-300">
-            <div className="mb-2 flex items-center justify-between text-[10.5px] uppercase tracking-[0.12em] text-neutral-500"><span>stdout · checkout-api</span><span>{logs.length ? `${logs.length} lines` : 'waiting for traffic…'}</span></div>
+          <div className="border-t border-[#D1D5DB]/80 bg-[#05060A] px-5 py-4 font-mono text-[12px] leading-[1.7] text-[#C5CAD3]">
+            <div className="mb-2 flex items-center justify-between text-[10.5px] uppercase tracking-[0.12em] text-[#6B7280]"><span>stdout · checkout-api</span><span>{logs.length ? `${logs.length} lines` : 'waiting for traffic…'}</span></div>
             <div className="h-[158px] overflow-hidden" aria-live="off">
               <AnimatePresence initial={false}>
                 {logs.slice(-8).map((l) => (
                   <motion.div key={l.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="flex gap-3 whitespace-nowrap">
-                    <span className="text-neutral-600">{l.t}</span>
-                    <span className={cn('w-12 font-medium', l.level === 'ERROR' ? 'text-red-400' : l.level === 'WARN' ? 'text-amber-400' : l.level === 'OK' ? 'text-emerald-400' : l.level === 'STEP' ? 'text-neutral-100' : 'text-neutral-400')}>{l.level}</span>
-                    <span className={cn('truncate', l.level === 'OK' ? 'text-emerald-300' : l.level === 'ERROR' ? 'text-red-200' : 'text-neutral-300')}>{l.text}</span>
+                    <span className="text-[#4B5563]">{l.t}</span>
+                    <span className={cn('w-12 font-medium', l.level === 'ERROR' ? 'text-red-400' : l.level === 'WARN' ? 'text-amber-400' : l.level === 'OK' ? 'text-emerald-400' : l.level === 'STEP' ? 'text-[#E5E7EB]' : 'text-[#9AA1AE]')}>{l.level}</span>
+                    <span className={cn('truncate', l.level === 'OK' ? 'text-emerald-300' : l.level === 'ERROR' ? 'text-red-200' : 'text-[#C5CAD3]')}>{l.text}</span>
                   </motion.div>
                 ))}
               </AnimatePresence>
-              <span className="animate-blink text-neutral-400">▍</span>
+              <span className="animate-blink text-[#9AA1AE]">▍</span>
             </div>
           </div>
 
@@ -186,7 +186,7 @@ export default function Playground() {
               <PrimaryButton onClick={simulate} disabled={phase !== 'broken'} icon={phase === 'running' ? <Loader2 size={13} className="animate-spin" /> : fixed ? <Check size={13} /> : <Wrench size={13} />}>
                 {phase === 'running' ? 'Injecting…' : fixed ? 'Patch live · 0 redeploys' : 'Simulate Fix'}
               </PrimaryButton>
-              <button type="button" onClick={reset} aria-label="Replay the demo" className="grid h-11 w-11 place-items-center rounded-xl border border-neutral-300 bg-white text-neutral-700 shadow-subtle transition-colors hover:border-neutral-400 hover:text-neutral-900"><RotateCcw size={16} /></button>
+              <button type="button" onClick={reset} aria-label="Replay the demo" className="grid h-11 w-11 place-items-center rounded-xl border border-neutral-300 bg-panel text-neutral-700 shadow-subtle transition-colors hover:border-neutral-400 hover:text-neutral-900"><RotateCcw size={16} /></button>
             </div>
           </div>
         </div>

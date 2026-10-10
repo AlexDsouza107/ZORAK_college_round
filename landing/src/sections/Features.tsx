@@ -5,6 +5,7 @@ import { useInView } from '../hooks/useInView';
 import { cn } from '../lib/cn';
 import { Dot, Pill } from '../ui/Badge';
 import { SectionHeading } from '../ui/SectionHeading';
+import { useSpotlight } from '../hooks/useSpotlight';
 
 /* Every card shares one surface, one padding, one header and one fixed-height "inset" for its visual. */
 function Frame({ children }: { children: React.ReactNode }) { return <div className="inset flex h-[176px] flex-col justify-center gap-2 p-4">{children}</div>; }
@@ -19,7 +20,7 @@ function Tracking() {
 }
 function Hosts() {
   const rows: [string, string, 'accent' | 'neutral'][] = [['shop.example.com', 'live', 'accent'], ['pv3fa9bc.shop.example.com', 'preview', 'neutral'], ['rel2.shop.example.com', 'v2', 'neutral']];
-  return <Frame>{rows.map(([h, l, t]) => <div key={h} className="flex items-center gap-2.5 rounded-md border border-neutral-200 bg-white px-3 py-2 font-mono text-[11.5px]"><Dot tone={t} /><span className="truncate text-neutral-900">{h}</span><span className="ml-auto text-neutral-600">{l}</span></div>)}</Frame>;
+  return <Frame>{rows.map(([h, l, t]) => <div key={h} className="flex items-center gap-2.5 rounded-md border border-neutral-200 bg-panel px-3 py-2 font-mono text-[11.5px]"><Dot tone={t} /><span className="truncate text-neutral-900">{h}</span><span className="ml-auto text-neutral-600">{l}</span></div>)}</Frame>;
 }
 function Checks() {
   const rows: [string, 'pass' | 'warn'][] = [['critical flow · checkout', 'pass'], ['console & network', 'pass'], ['accessibility · axe', 'pass'], ['visual diff · 2 viewports', 'warn']];
@@ -32,17 +33,17 @@ function Gauge() {
   const tripped = v >= 4;
   return <div ref={ref}><Frame>
     <div className="relative mt-4 h-9"><div className="absolute inset-0 overflow-hidden rounded-md bg-neutral-200"><motion.div className={cn('absolute inset-y-0 left-0 transition-colors', tripped ? 'bg-danger' : 'bg-accent')} animate={{ width: `${Math.min(100, (v / 8) * 100)}%` }} transition={{ type: 'spring', stiffness: 120, damping: 20 }} /></div>
-      <div className="absolute -inset-y-1 w-px bg-neutral-900/70" style={{ left: '50%' }}><span className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] text-neutral-900">limit 4</span></div></div>
+      <div className="absolute -inset-y-1 w-px bg-white/70" style={{ left: '50%' }}><span className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] text-neutral-900">limit 4</span></div></div>
     <div className="mt-1 flex justify-between font-mono text-[11.5px]"><span className="text-neutral-700">errors/min <b className="tabular-nums text-neutral-900">{v.toFixed(1)}</b></span><span className={tripped ? 'font-medium text-danger-deep' : 'text-accent-deep'}>{tripped ? '↩ auto-rollback' : 'within threshold'}</span></div>
   </Frame></div>;
 }
 function Chain() {
-  return <Frame><div className="flex items-center justify-center gap-1.5">{['9c1f', 'a07e', '3b52', 'e48d'].map((h, i) => <div key={h} className="flex items-center gap-1.5"><div className="rounded-md border border-neutral-200 bg-white px-2.5 py-2 text-center font-mono text-[10.5px] leading-tight"><div className="text-neutral-500">#{i + 1}</div><div className="text-neutral-900">{h}…</div></div>{i < 3 && <span className="h-px w-2.5 bg-accent" />}</div>)}</div>
+  return <Frame><div className="flex items-center justify-center gap-1.5">{['9c1f', 'a07e', '3b52', 'e48d'].map((h, i) => <div key={h} className="flex items-center gap-1.5"><div className="rounded-md border border-neutral-200 bg-panel px-2.5 py-2 text-center font-mono text-[10.5px] leading-tight"><div className="text-neutral-500">#{i + 1}</div><div className="text-neutral-900">{h}…</div></div>{i < 3 && <span className="h-px w-2.5 bg-accent" />}</div>)}</div>
     <div className="flex items-center justify-center gap-2 font-mono text-[11.5px] text-accent-deep"><Dot tone="accent" />chain intact · 4 / 4 seals verified</div></Frame>;
 }
 function Ops() {
   const ops = ['setAttr  disabled → null', 'setText  “Proceed to checkout”', 'setStyle  width: 100%'];
-  return <Frame>{ops.map((o, i) => <motion.div key={o} initial={{ opacity: 0, x: -8 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 + i * 0.09 }} className="flex items-center gap-2.5 rounded-md border border-neutral-200 bg-white px-3 py-2 font-mono text-[11.5px] text-neutral-900"><span className="text-accent">+</span>{o}</motion.div>)}
+  return <Frame>{ops.map((o, i) => <motion.div key={o} initial={{ opacity: 0, x: -8 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 + i * 0.09 }} className="flex items-center gap-2.5 rounded-md border border-neutral-200 bg-panel px-3 py-2 font-mono text-[11.5px] text-neutral-900"><span className="text-accent">+</span>{o}</motion.div>)}
     <div className="font-mono text-[11px] text-neutral-600">3 operations · reversible · reviewed</div></Frame>;
 }
 
@@ -57,14 +58,15 @@ const FEATURES: F[] = [
 ];
 
 export default function Features() {
+  const spot = useSpotlight();
   return (
     <section id="features" className="section-pad relative">
       <div className="container-x">
         <SectionHeading eyebrow="Features" title="Built for the worst Friday afternoon.">Six systems that make hotfixing production feel boring — in the best way.</SectionHeading>
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f, i) => (
-            <motion.article key={f.title} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ type: 'spring', stiffness: 110, damping: 22, delay: (i % 3) * 0.05 }}
-              whileHover={{ y: -3 }} className="surface flex flex-col p-6 transition-shadow duration-300 hover:shadow-pop">
+            <motion.article key={f.title} initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true, margin: '-60px' }} transition={{ type: 'spring', stiffness: 90, damping: 20, delay: (i % 3) * 0.08 }}
+              whileHover={{ y: -4 }} onMouseMove={spot} className="surface spot flex flex-col p-6 transition-shadow duration-300 hover:shadow-pop">
               <div className="flex items-center justify-between">
                 <span className="grid h-9 w-9 place-items-center rounded-lg border border-neutral-200 bg-neutral-50 text-neutral-900"><f.icon size={17} /></span>
                 <span className="mono-label">{f.tag}</span>

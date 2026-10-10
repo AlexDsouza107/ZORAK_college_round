@@ -32,7 +32,7 @@ export default function Callouts({ store, patched }: { store: SceneStore; patche
         const n = TREE.nodes[ni], ok = !!store.fixedTarget[ni];
         return (
           <div key={n.id} ref={(el) => { refs.current[k] = el; }} className="absolute left-0 top-0 opacity-0 transition-opacity duration-300 will-change-transform">
-            <div className={`rounded-md border bg-white px-2 py-1 font-mono shadow-subtle transition-colors duration-500 ${ok ? 'border-accent-line' : 'border-danger-line'}`}>
+            <div className={`rounded-md border bg-panel px-2 py-1 font-mono shadow-subtle transition-colors duration-500 ${ok ? 'border-accent-line' : 'border-danger-line'}`}>
               <div className="text-[10px] leading-tight text-neutral-600">{n.tag}</div>
               <div className={`mt-0.5 flex items-center gap-1.5 whitespace-nowrap text-[10.5px] font-medium leading-tight ${ok ? 'text-accent-deep' : 'text-danger-deep'}`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${ok ? 'bg-accent' : 'animate-softPulse bg-danger'}`} />{ok ? '200 OK' : n.code}

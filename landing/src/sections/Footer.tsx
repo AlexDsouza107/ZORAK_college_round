@@ -23,10 +23,10 @@ function CopyCommand({ command }: { command: string }) {
     setCopied(true); setTimeout(() => setCopied(false), 1800);
   };
   return (
-    <button type="button" onClick={copy} aria-label={`Copy ${command}`} className="group flex w-full max-w-md items-center gap-3 rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-3 text-left font-mono text-[13.5px] text-neutral-100 shadow-subtle transition-colors hover:border-neutral-600">
-      <Terminal size={15} className="shrink-0 text-neutral-500" />
+    <button type="button" onClick={copy} aria-label={`Copy ${command}`} className="group flex w-full max-w-md items-center gap-3 rounded-lg border border-white/10 bg-[#05060A] px-4 py-3 text-left font-mono text-[13.5px] text-[#E5E7EB] shadow-subtle transition-colors hover:border-accent/50">
+      <Terminal size={15} className="shrink-0 text-[#6B7280]" />
       <span className="flex-1 truncate"><span className="text-emerald-400">$</span> {command}</span>
-      <span className="grid h-7 w-7 place-items-center rounded-md bg-white/10 text-neutral-400 transition-colors group-hover:text-white">
+      <span className="grid h-7 w-7 place-items-center rounded-md bg-white/10 text-[#9AA1AE] transition-colors group-hover:text-white">
         <AnimatePresence mode="wait" initial={false}>
           <motion.span key={copied ? 'c' : 'k'} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.4, opacity: 0 }} transition={{ type: 'spring', stiffness: 500, damping: 24 }}>
             {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
@@ -47,7 +47,7 @@ export default function Footer() {
   const status = useStudioStatus();
   const label = status === 'up' ? 'All Systems Operational' : status === 'checking' ? 'Checking status…' : 'Demo mode · Studio not running';
   return (
-    <footer className="relative mt-8 border-t border-neutral-200 bg-canvas-sunken">
+    <footer className="relative mt-8 border-t border-white/[0.07] bg-canvas-sunken/95">
       <div className="mx-auto w-full max-w-[1264px] px-5 py-16 sm:px-8 md:py-20">
         <div className="grid gap-12 md:grid-cols-[1.3fr_1fr]">
           <div>
@@ -62,7 +62,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-neutral-200 pt-6 sm:flex-row sm:items-center">
-          <span role="status" className={cn('inline-flex items-center gap-2.5 rounded-md border px-3 py-1.5 font-mono text-[11.5px] font-medium', status === 'up' ? 'border-accent-line bg-accent-soft text-accent-deep' : 'border-neutral-300 bg-white text-neutral-700')}>
+          <span role="status" className={cn('inline-flex items-center gap-2.5 rounded-md border px-3 py-1.5 font-mono text-[11.5px] font-medium', status === 'up' ? 'border-accent-line bg-accent-soft text-accent-deep' : 'border-neutral-300 bg-panel text-neutral-700')}>
             <span className="relative flex h-2 w-2"><span className={cn('absolute inline-flex h-full w-full rounded-full opacity-60', status === 'up' ? 'animate-ping bg-accent' : 'hidden')} /><span className={cn('relative inline-flex h-2 w-2 rounded-full', status === 'up' ? 'bg-accent' : status === 'down' ? 'bg-neutral-400' : 'animate-pulse bg-neutral-400')} /></span>{label}
           </span>
           <span className="font-mono text-[11.5px] text-neutral-600">v1.0.1 · © 2026 PATCHWORK · Built for the CRCE hackathon round</span>

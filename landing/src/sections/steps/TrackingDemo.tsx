@@ -53,9 +53,9 @@ export default function TrackingDemo() {
           </div>
           <div className="flex gap-2">
             {phase === 'v1' ? (
-              <button type="button" onClick={ship} className="group flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-[13px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_1px_2px_rgba(17,24,39,0.35)] transition-all hover:bg-neutral-800 active:scale-[0.98]"><Rocket size={14} />Ship the redesign</button>
+              <button type="button" onClick={ship} className="group flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-[13px] font-semibold text-canvas shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] transition-all hover:bg-white active:scale-[0.98]"><Rocket size={14} />Ship the redesign</button>
             ) : (
-              <button type="button" onClick={reset} className="flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-white px-3.5 py-2 font-mono text-[11.5px] text-neutral-700 transition-colors hover:text-ink"><RotateCcw size={12} />Replay</button>
+              <button type="button" onClick={reset} className="flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-panel px-3.5 py-2 font-mono text-[11.5px] text-neutral-700 transition-colors hover:text-ink"><RotateCcw size={12} />Replay</button>
             )}
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function TrackingDemo() {
 
 function Code({ title, children, active, dim }: { title: string; children: React.ReactNode; active?: boolean; dim?: boolean }) {
   return (
-    <div className={cn('rounded-xl border bg-white p-4 transition-all duration-500', active ? 'border-neutral-300 shadow-sm' : 'border-neutral-200', dim && 'opacity-45')}>
+    <div className={cn('rounded-xl border bg-panel p-4 transition-all duration-500', active ? 'border-neutral-300 shadow-sm' : 'border-neutral-200', dim && 'opacity-45')}>
       <div className="mono-label mb-3">{title}</div><div className="space-y-0.5 font-mono text-[11.5px] leading-[1.7] text-neutral-700">{children}</div>
     </div>
   );

@@ -1,6 +1,6 @@
 {
   "name": "patchwork",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "PATCHWORK - Hotfix the Internet. Patch live websites without rebuilding them.",
   "type": "module",

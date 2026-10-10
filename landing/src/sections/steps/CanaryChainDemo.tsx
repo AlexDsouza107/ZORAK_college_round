@@ -36,7 +36,7 @@ export default function CanaryChainDemo() {
         <div className="flex items-center justify-between"><span className="mono-label flex items-center gap-2"><Bird size={13} />Canary rollout</span>
           <span className="font-mono text-[12px] tabular-nums text-ink">{rolled ? 'rolled back · v3 live' : `v4 ${share}% · v3 ${100 - share}%`}</span></div>
         <div className="mt-3 grid grid-cols-[repeat(25,minmax(0,1fr))] gap-1" aria-hidden>
-          {Array.from({ length: 50 }).map((_, i) => <motion.span key={i} animate={{ backgroundColor: i < Math.round((share / 100) * 50) ? '#059669' : '#E5E5E5', scale: i < Math.round((share / 100) * 50) ? 1 : 0.86 }} transition={{ type: 'spring', stiffness: 400, damping: 24, delay: (i % 25) * 0.004 }} className="aspect-square rounded-[3px]" />)}
+          {Array.from({ length: 50 }).map((_, i) => <motion.span key={i} animate={{ backgroundColor: i < Math.round((share / 100) * 50) ? '#10B981' : '#2A3242', scale: i < Math.round((share / 100) * 50) ? 1 : 0.86 }} transition={{ type: 'spring', stiffness: 400, damping: 24, delay: (i % 25) * 0.004 }} className="aspect-square rounded-[3px]" />)}
         </div>
         <div className="mt-3 flex items-center gap-3">
           <input type="range" min={5} max={100} step={5} value={pct} disabled={rolled} onChange={(e) => setPct(+e.target.value)} style={{ ["--fill" as string]: `${((pct - 5) / 95) * 100}%` }} className="flex-1" aria-label="Canary share" />
@@ -56,7 +56,7 @@ export default function CanaryChainDemo() {
             const bad = firstBad >= 0 && i >= firstBad, origin = firstBad === i;
             return (
               <motion.div key={b.seq} layout animate={{ y: origin ? -3 : 0 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-                className={cn('rounded-xl border p-3 transition-colors duration-500', bad ? 'border-danger-line bg-danger-soft/70' : 'border-neutral-200 bg-white')}>
+                className={cn('rounded-xl border p-3 transition-colors duration-500', bad ? 'border-danger-line bg-danger-soft/70' : 'border-neutral-200 bg-panel')}>
                 <div className="flex items-center justify-between"><span className="font-mono text-[10.5px] text-neutral-600">#{b.seq}</span><span className={cn('h-1.5 w-1.5 rounded-full', bad ? 'bg-danger' : 'bg-accent')} /></div>
                 <div className="mt-1.5 truncate font-mono text-[11.5px] font-medium text-ink">{b.type}</div>
                 <div className={cn('mt-0.5 truncate text-[11px]', origin ? 'text-danger-deep' : 'text-neutral-600')} title={b.payload}>{b.payload}</div>

@@ -30,11 +30,11 @@ export default function Dust({ reduced }: { reduced: boolean }) {
     <>
       <points ref={far} position={[0, 0, -2]}>
         <bufferGeometry><primitive attach="attributes-position" object={farPos} /></bufferGeometry>
-        <pointsMaterial map={tex} size={0.1} sizeAttenuation transparent opacity={0.45} depthWrite={false} color="#737373" fog />
+        <pointsMaterial map={tex} size={0.1} sizeAttenuation transparent opacity={0.28} depthWrite={false} color="#9AA3B5" fog />
       </points>
       <points ref={near} position={[0, 0, 4.5]}>
         <bufferGeometry><primitive attach="attributes-position" object={nearPos} /></bufferGeometry>
-        <pointsMaterial map={tex} size={0.75} sizeAttenuation transparent opacity={0.1} depthWrite={false} color="#A3A3A3" fog={false} />
+        <pointsMaterial map={tex} size={0.75} sizeAttenuation transparent opacity={0.05} depthWrite={false} color="#B8C0D0" fog={false} />
       </points>
     </>
   );

@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.0.3 — Landing page: dark premium theme, patch-themed background, scroll effects
+
+A visual redesign of the landing page (`landing/`). **No text content was changed.** The product (server, Studio, extension) is unchanged.
+
+### Theme
+- Deep blue-black canvas with solid, layered dark panels (hairline borders, inner top highlight); light-grey body text and near-white headlines.
+- One emerald accent for live/active/success; red only for runtime errors. Primary CTAs invert to bright ink on dark.
+- The 3D hero scene, charts, terminal, callouts and footer are re-coloured for dark.
+
+### Background
+- New full-page **bubble field**: glassy bubbles and stitched "patch" squares drift upward. Bubbles start red (`×`, broken) and ripple into emerald (`✓`, patched) as they rise.
+- Bubbles parallax with scroll, move away from the cursor and pop on click. A soft scrim keeps hero copy legible. Slowly parallaxing colour pools sit behind everything.
+
+### Scrolling
+- Smooth inertial scrolling (Lenis) with gliding anchor links; thin emerald scroll-progress bar.
+- Hero parallax; "How it works" step lines fill, numbers glow and demos drift as each step scrolls through; blur-in section headings and cards; cursor-following spotlight on feature cards and the stats row.
+- Reduced-motion users get a static background and native scrolling.
+
+### Performance
+- Frosted-glass blur over the animated background dropped a software-rendered test browser to ~22 fps; replaced with solid layered panels. All effects now run at 60 fps in the same test.
+
+### Housekeeping
+- New dependency: `lenis`. All workspace packages bumped to 1.0.3.
+
 ## v1.0.2 — Overview dashboard + name fix
 
 ### Studio

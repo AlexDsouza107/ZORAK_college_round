@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { cn } from '../../lib/cn';
 import { Pill } from '../../ui/Badge';
 
-const SWATCHES = [['#111827', 'Carbon'], ['#059669', 'Emerald'], ['#6B7280', 'Slate']] as const;
+const SWATCHES = [['#1F2937', 'Carbon'], ['#10B981', 'Emerald'], ['#6B7280', 'Slate']] as const;
 const spring = { type: 'spring', stiffness: 380, damping: 28 } as const;
 
 /** Step 01 — pick an element, tweak its properties, watch it change live. Everything shown here is a reversible "operation". */
@@ -17,12 +17,12 @@ export default function PickerDemo() {
   return (
     <div className="grid gap-4 sm:grid-cols-[1.15fr_1fr]">
       {/* mock page */}
-      <div className="relative overflow-hidden rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+      <div className="relative overflow-hidden rounded-xl border border-neutral-200 bg-panel p-5 shadow-sm">
         <div className="mono-label mb-4 flex items-center justify-between"><span>shop.example.com/cart</span><span className="flex gap-1">{[0, 1, 2].map((i) => <i key={i} className="h-1.5 w-1.5 rounded-full bg-neutral-200" />)}</span></div>
         <div className="space-y-2.5 text-[13px] text-neutral-700">
           <div className="flex justify-between"><span>Aurora Headphones</span><span className="font-medium text-ink">$129.00</span></div>
           <div className="flex justify-between"><span>Shipping</span><span>Free</span></div>
-          <div className="h-px bg-ink/[0.07]" />
+          <div className="h-px bg-white/[0.08]" />
           <div className="flex justify-between text-[14px] font-medium text-ink"><span>Total</span><span>$129.00</span></div>
         </div>
         <div className="relative mt-5">
@@ -57,11 +57,11 @@ export default function PickerDemo() {
         <div className="mono-label mb-3 flex items-center justify-between">Inspector<span className="text-accent-deep">{selected ? `${ops} op${ops === 1 ? '' : 's'}` : 'no selection'}</span></div>
         <div className={cn('space-y-4 transition-opacity duration-300', !selected && 'pointer-events-none opacity-40')}>
           <label className="block"><span className="mono-label">Text</span>
-            <input value={label} onChange={(e) => setLabel(e.target.value)} className="mt-1.5 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-[13px] outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(95,156,128,.25)]" />
+            <input value={label} onChange={(e) => setLabel(e.target.value)} className="mt-1.5 w-full rounded-lg border border-neutral-300 bg-panel px-3 py-2 text-[13px] outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(95,156,128,.25)]" />
           </label>
           <div className="flex items-center justify-between"><span className="mono-label">Enabled</span>
             <button type="button" role="switch" aria-checked={enabled} onClick={() => setEnabled((v) => !v)} className={cn('relative h-6 w-11 rounded-full transition-colors duration-300', enabled ? 'bg-accent' : 'bg-neutral-300')}>
-              <motion.span layout transition={spring} className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow" style={{ left: enabled ? 22 : 2 }} />
+              <motion.span layout transition={spring} className="absolute top-0.5 h-5 w-5 rounded-full bg-panel shadow" style={{ left: enabled ? 22 : 2 }} />
             </button>
           </div>
           <div><span className="mono-label">Colour</span>
