@@ -7,7 +7,8 @@
   "workspaces": [
     "server",
     "studio",
-    "demo-site"
+    "demo-site",
+    "landing"
   ],
   "scripts": {
     "setup": "npm install && npx playwright install chromium",
@@ -21,7 +22,10 @@
     "test:all": "node scripts/test-core.mjs && node scripts/test-editor.mjs && node scripts/test-story.mjs && node scripts/test-extension.mjs",
     "docs": "node docs/build-manual.cjs && node docs/build-demo-guide.cjs",
     "demo:prep": "node scripts/demo-prep.mjs",
-    "test:demo": "npm run demo:prep && node scripts/test-demo-ui.mjs"
+    "test:demo": "npm run demo:prep && node scripts/test-demo-ui.mjs",
+    "landing": "npm run dev -w landing",
+    "landing:build": "npm run build -w landing",
+    "test:landing": "node scripts/test-landing.mjs"
   },
   "devDependencies": {
     "docx": "^9.9.0"

@@ -24,6 +24,7 @@ Optional: copy `.env.example` to `.env` and add `ANTHROPIC_API_KEY` for Claude-p
 | `runtime/` | Scripts injected into patched pages (patch applier + visual-editor overlay) |
 | `shared/core.cjs` | The multi-signal element locator and conflict engine (runs in browser **and** server) |
 | `studio/` | React app: visual editor, patches & review, conflicts, verification, releases + time machine, tracking, audit, settings |
+| `landing/` | Marketing landing page (React + Tailwind + three.js): `npm run landing` for dev on :5174, `npm run landing:build` to build |
 | `demo-site/` | ShopLite — a deliberately buggy store with a v1 and a redesigned v2 |
 | `extension/` | Chrome extension: apply patches on the real site, and propose new ones from the page |
 | `scripts/` | Start script, tests (`npm run test:all`), dev tooling |
