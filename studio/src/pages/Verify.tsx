@@ -47,7 +47,7 @@ export default function Verify() {
   const rep = current?.report;
 
   return (
-    <Page title="Verification" sub="A real browser tests the live site against your proposed patch set — nothing ships on a red result"
+    <Page big title="Verification"
       actions={<Btn variant="primary" icon={I.Play} loading={busy === 'go' || running} disabled={!sel.size} onClick={start}>Run verification ({sel.size})</Btn>}>
       <div className="grid" style={{ gridTemplateColumns: '330px 1fr', alignItems: 'start' }}>
         <div className="col gap-lg">

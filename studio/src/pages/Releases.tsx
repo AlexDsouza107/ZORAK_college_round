@@ -59,7 +59,7 @@ export default function Releases() {
   }, [ttCur, ttPrev]);
 
   return (
-    <Page title="Releases" sub="Immutable, versioned patch sets — deploy gradually, roll back instantly">
+    <Page big title="Releases">
       <div className="col gap-lg">
         {(active || canary) && <div className="grid g2">
           {active && <Card className="hover"><div className="row between"><div><div className="eyebrow">In production</div><div className="row"><h2 style={{ fontSize: 30 }}>v{active.version}</h2><Status s="live" /></div><div className="small muted">{active.patchIds.length} patches · deployed {ago(active.deployedAt)} by <Who id={active.createdBy} /></div></div>

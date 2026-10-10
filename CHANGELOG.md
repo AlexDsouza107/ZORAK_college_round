@@ -13,7 +13,7 @@
   - Generous spacing and larger text; card headers wrap their buttons instead of squeezing titles; better dark-theme contrast for secondary text.
 - New **Review queue** card (in review, approved and drafts) and a per-patch list under **Element tracking**.
 - **Recent activity** now uses the same icons and colour coding as the Audit trail, from one shared definition (`studio/src/auditMeta.tsx`).
-- **Patches page:** removed the subtitle under the heading and made the page title larger and bolder (36px).
+- **Patches, Verification and Releases pages:** removed the subtitle under the heading and made the page title larger and bolder (36px).
 
 ### Server
 - `GET /api/audit` accepts an optional `exclude` prefix filter (e.g. `exclude=drift.`), so the dashboard feed is never flooded by automatic drift checks.
