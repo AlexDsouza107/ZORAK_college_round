@@ -305,7 +305,7 @@ add(table(['Capability', 'Developer', 'Reviewer', 'Admin'], [
   ['Override failed/missing verification (with recorded reason)', '—', '—', '✓'],
   ['Change settings, reset demo, tamper demo', '—', '—', '✓']
 ], [4838, 1500, 1500, 1800]));
-add(P('The demo users: **Alex D’Souza** (admin), **Jordan Lee** (reviewer), **Sam Rivera** and **Riya Shah** (developers).', { p: { spacing: { before: 120, after: 120 } } }));
+add(P('The demo users: **Alex Dsouza** (admin), **Jordan Lee** (reviewer), **Sam Rivera** and **Riya Shah** (developers).', { p: { spacing: { before: 120, after: 120 } } }));
 
 /* 7 ---------------------------------------------------------------------- */
 add(H1('7. The Chrome extension'));

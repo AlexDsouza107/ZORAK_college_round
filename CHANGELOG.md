@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.0.2 — Overview dashboard + name fix
+
+### Studio
+- **Overview is now a full-width dashboard.** The page uses the whole window (up to 2,200px) instead of a centred ~1,380px column; at 2,000px wide it fits on one screen.
+- Replaced the tall welcome banner with a slim strip; stat tiles now carry an icon, a larger value and a clearer subtitle, and are clickable.
+- Three aligned columns: pipeline / production health / demo controls · element tracking / review queue · recent activity (14 items).
+- New **Review queue** card (in review, approved and drafts) and a per-patch list under **Element tracking**.
+- Health metrics reflow into a 2×2 grid when the card is narrow.
+- Better dark-theme contrast for secondary text.
+
+### Housekeeping
+- The demo admin user is now named **Alex Dsouza** in the app, the seeded audit trail and the manual.
+- All workspace packages bumped to 1.0.2.
+
 ## v1.0.1 — Landing page refresh
 
 A design-system refactor of the landing page (`landing/`). The product (server, Studio, extension) is unchanged.

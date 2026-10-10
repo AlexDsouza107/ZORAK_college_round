@@ -1,5 +1,5 @@
 export const USERS = {
-  alex: { id: 'alex', name: 'Alex D\'Souza', role: 'admin', color: '#7c5cff' },
+  alex: { id: 'alex', name: 'Alex Dsouza', role: 'admin', color: '#7c5cff' },
   jordan: { id: 'jordan', name: 'Jordan Lee', role: 'reviewer', color: '#10b981' },
   sam: { id: 'sam', name: 'Sam Rivera', role: 'developer', color: '#f59e0b' },
   riya: { id: 'riya', name: 'Riya Shah', role: 'developer', color: '#ec4899' }
