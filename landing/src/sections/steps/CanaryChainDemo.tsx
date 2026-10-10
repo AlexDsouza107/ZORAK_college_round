@@ -32,43 +32,43 @@ export default function CanaryChainDemo() {
 
   return (
     <div className="grid gap-4">
-      <div className="glass rounded-2xl p-4">
+      <div className="surface rounded-xl p-4">
         <div className="flex items-center justify-between"><span className="mono-label flex items-center gap-2"><Bird size={13} />Canary rollout</span>
           <span className="font-mono text-[12px] tabular-nums text-ink">{rolled ? 'rolled back · v3 live' : `v4 ${share}% · v3 ${100 - share}%`}</span></div>
         <div className="mt-3 grid grid-cols-[repeat(25,minmax(0,1fr))] gap-1" aria-hidden>
-          {Array.from({ length: 50 }).map((_, i) => <motion.span key={i} animate={{ backgroundColor: i < Math.round((share / 100) * 50) ? '#5F9C80' : '#D3D8DE', scale: i < Math.round((share / 100) * 50) ? 1 : 0.86 }} transition={{ type: 'spring', stiffness: 400, damping: 24, delay: (i % 25) * 0.004 }} className="aspect-square rounded-[3px]" />)}
+          {Array.from({ length: 50 }).map((_, i) => <motion.span key={i} animate={{ backgroundColor: i < Math.round((share / 100) * 50) ? '#059669' : '#E5E5E5', scale: i < Math.round((share / 100) * 50) ? 1 : 0.86 }} transition={{ type: 'spring', stiffness: 400, damping: 24, delay: (i % 25) * 0.004 }} className="aspect-square rounded-[3px]" />)}
         </div>
         <div className="mt-3 flex items-center gap-3">
           <input type="range" min={5} max={100} step={5} value={pct} disabled={rolled} onChange={(e) => setPct(+e.target.value)} style={{ ["--fill" as string]: `${((pct - 5) / 95) * 100}%` }} className="flex-1" aria-label="Canary share" />
-          <button type="button" onClick={() => setRolled((r) => !r)} className={cn('flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition-all active:scale-95', rolled ? 'bg-sage text-white' : 'border border-coral-line bg-coral-soft text-coral-deep hover:bg-coral/15')}>
+          <button type="button" onClick={() => setRolled((r) => !r)} className={cn('flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-[12.5px] font-medium transition-all active:scale-95', rolled ? 'bg-accent text-white' : 'border border-danger-line bg-danger-soft text-danger-deep hover:bg-danger/15')}>
             {rolled ? <><ShieldCheck size={13} />Redeploy canary</> : <><Undo2 size={13} />1-click rollback</>}
           </button>
         </div>
       </div>
 
-      <div className="glass rounded-2xl p-4">
+      <div className="surface rounded-xl p-4">
         <div className="mb-3 flex items-center justify-between">
           <span className="mono-label flex items-center gap-2"><Link2 size={13} />Audit chain · SHA-256</span>
-          {firstBad < 0 ? <Pill tone="sage"><ShieldCheck size={11} />chain intact</Pill> : <Pill tone="coral"><ShieldAlert size={11} />broken at #{blocks[firstBad].seq}</Pill>}
+          {firstBad < 0 ? <Pill tone="accent"><ShieldCheck size={11} />chain intact</Pill> : <Pill tone="danger"><ShieldAlert size={11} />broken at #{blocks[firstBad].seq}</Pill>}
         </div>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {blocks.map((b, i) => {
             const bad = firstBad >= 0 && i >= firstBad, origin = firstBad === i;
             return (
               <motion.div key={b.seq} layout animate={{ y: origin ? -3 : 0 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-                className={cn('rounded-xl border p-3 transition-colors duration-500', bad ? 'border-coral-line bg-coral-soft/70' : 'border-ink/[0.08] bg-white/80')}>
-                <div className="flex items-center justify-between"><span className="font-mono text-[10.5px] text-steel-500">#{b.seq}</span><span className={cn('h-1.5 w-1.5 rounded-full', bad ? 'bg-coral' : 'bg-sage')} /></div>
+                className={cn('rounded-xl border p-3 transition-colors duration-500', bad ? 'border-danger-line bg-danger-soft/70' : 'border-neutral-200 bg-white')}>
+                <div className="flex items-center justify-between"><span className="font-mono text-[10.5px] text-neutral-600">#{b.seq}</span><span className={cn('h-1.5 w-1.5 rounded-full', bad ? 'bg-danger' : 'bg-accent')} /></div>
                 <div className="mt-1.5 truncate font-mono text-[11.5px] font-medium text-ink">{b.type}</div>
-                <div className={cn('mt-0.5 truncate text-[11px]', origin ? 'text-coral-deep' : 'text-steel-500')} title={b.payload}>{b.payload}</div>
-                <div className="mt-2 font-mono text-[10px] leading-tight text-steel-500"><span className="text-steel-400">seal </span><span className={cn(bad && 'text-coral-deep line-through')}>{b.stored.slice(0, 10)}</span>
-                  {bad && recomputed[i] && <div className="text-coral-deep">now {recomputed[i].slice(0, 10)}</div>}</div>
+                <div className={cn('mt-0.5 truncate text-[11px]', origin ? 'text-danger-deep' : 'text-neutral-600')} title={b.payload}>{b.payload}</div>
+                <div className="mt-2 font-mono text-[10px] leading-tight text-neutral-600"><span className="text-neutral-500">seal </span><span className={cn(bad && 'text-danger-deep line-through')}>{b.stored.slice(0, 10)}</span>
+                  {bad && recomputed[i] && <div className="text-danger-deep">now {recomputed[i].slice(0, 10)}</div>}</div>
               </motion.div>
             );
           })}
         </div>
         <div className="mt-3 flex items-center justify-between gap-3">
-          <span className="text-[12px] text-steel-500">{firstBad < 0 ? 'Each seal hashes the one before it. Try rewriting history:' : 'Editing one record broke its seal and every seal after it.'}</span>
-          <button type="button" onClick={firstBad < 0 ? tamper : restore} disabled={!blocks.length} className={cn('shrink-0 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition-all active:scale-95', firstBad < 0 ? 'border border-coral-line bg-coral-soft text-coral-deep hover:bg-coral/15' : 'border border-ink/10 text-steel-600 hover:text-ink')}>
+          <span className="text-[12px] text-neutral-600">{firstBad < 0 ? 'Each seal hashes the one before it. Try rewriting history:' : 'Editing one record broke its seal and every seal after it.'}</span>
+          <button type="button" onClick={firstBad < 0 ? tamper : restore} disabled={!blocks.length} className={cn('shrink-0 rounded-lg px-3.5 py-1.5 text-[12.5px] font-medium transition-all active:scale-95', firstBad < 0 ? 'border border-danger-line bg-danger-soft text-danger-deep hover:bg-danger/15' : 'border border-neutral-300 text-neutral-700 hover:text-ink')}>
             {firstBad < 0 ? 'Tamper with block #2' : 'Restore'}
           </button>
         </div>

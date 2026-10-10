@@ -10,13 +10,14 @@ export interface SceneStore {
   objs: (THREE.Object3D | null)[];
   shock: { node: number; t: number };
   groupScale: number;
+  screen: Float32Array;       // projected canvas-pixel x,y per node (read by the HTML callouts)
   patchedCount: number;
   onPatched?: (count: number, node: number) => void;
 }
 
 export function createStore(): SceneStore {
   const n = TREE.nodes.length;
-  return { hovered: -1, dwell: 0, fixedTarget: new Float32Array(n), fixed: new Float32Array(n), objs: new Array(n).fill(null), shock: { node: -1, t: 9 }, groupScale: 1, patchedCount: 0 };
+  return { hovered: -1, dwell: 0, fixedTarget: new Float32Array(n), fixed: new Float32Array(n), objs: new Array(n).fill(null), shock: { node: -1, t: 9 }, groupScale: 1, screen: new Float32Array(n * 2), patchedCount: 0 };
 }
 
 export function resetStore(s: SceneStore) {

@@ -28,34 +28,34 @@ export default function TrackingDemo() {
       <div className="grid gap-3 sm:grid-cols-2">
         <Code title="v1 · what you patched" active={!v2}>
           <L>{'<aside class="cart-summary">'}</L>
-          <L i={1} hl={phase === 'v1' ? 'sage' : undefined}>{'<button id="checkout-btn"'}</L>
+          <L i={1} hl={phase === 'v1' ? 'accent' : undefined}>{'<button id="checkout-btn"'}</L>
           <L i={2}>{'class="btn btn-primary"'}</L><L i={2}>{'aria-label="Proceed to checkout">'}</L>
           <L i={2}>Proceed to chekout</L><L i={1}>{'</button>'}</L><L>{'</aside>'}</L>
         </Code>
         <Code title="v2 · vendor redesign" active={v2} dim={!v2}>
           <L>{'<div class="grid">'}</L><L i={1}>{'<aside class="order-summary">'}</L>
-          <L i={2} hl={phase === 'healed' ? 'sage' : phase === 'lost' ? 'coral' : undefined}>{'<button id="pay-cta"'}</L>
+          <L i={2} hl={phase === 'healed' ? 'accent' : phase === 'lost' ? 'danger' : undefined}>{'<button id="pay-cta"'}</L>
           <L i={3}>{'class="ui-btn ui-btn--cta"'}</L><L i={3}>{'aria-label="Proceed to checkout">'}</L>
           <L i={3}>Proceed to chekout →</L><L i={2}>{'</button>'}</L>
         </Code>
       </div>
 
-      <div className="glass rounded-2xl p-4">
+      <div className="surface rounded-xl p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <span className="mono-label">Target selector</span>
-            <code className={cn('rounded-md px-2 py-1 font-mono text-[12px] transition-all duration-500', phase === 'v1' && 'bg-sage-soft text-sage-deep', phase === 'lost' && 'bg-coral-soft text-coral-deep line-through', (phase === 'scanning') && 'bg-steel-100 text-steel-500', phase === 'healed' && 'bg-sage-soft text-sage-deep')}>
+            <code className={cn('rounded-md px-2 py-1 font-mono text-[12px] transition-all duration-500', phase === 'v1' && 'bg-accent-soft text-accent-deep', phase === 'lost' && 'bg-danger-soft text-danger-deep line-through', (phase === 'scanning') && 'bg-neutral-100 text-neutral-600', phase === 'healed' && 'bg-accent-soft text-accent-deep')}>
               {phase === 'healed' ? '#pay-cta' : phase === 'scanning' ? 'locating…' : '#checkout-btn'}
             </code>
-            {phase === 'lost' && <Pill tone="coral">selector broken</Pill>}
-            {phase === 'v1' && <Pill tone="sage">attached</Pill>}
-            {phase === 'healed' && <Pill tone="sage"><Check size={11} />self-healed</Pill>}
+            {phase === 'lost' && <Pill tone="danger">selector broken</Pill>}
+            {phase === 'v1' && <Pill tone="accent">attached</Pill>}
+            {phase === 'healed' && <Pill tone="accent"><Check size={11} />self-healed</Pill>}
           </div>
           <div className="flex gap-2">
             {phase === 'v1' ? (
-              <button type="button" onClick={ship} className="group flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-[13px] font-medium text-alabaster-50 shadow-pill transition-transform hover:-translate-y-0.5 active:scale-95"><Rocket size={14} />Ship the redesign</button>
+              <button type="button" onClick={ship} className="group flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-[13px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_1px_2px_rgba(17,24,39,0.35)] transition-all hover:bg-neutral-800 active:scale-[0.98]"><Rocket size={14} />Ship the redesign</button>
             ) : (
-              <button type="button" onClick={reset} className="flex items-center gap-1.5 rounded-full border border-ink/10 px-3.5 py-2 font-mono text-[11.5px] text-steel-600 transition-colors hover:text-ink"><RotateCcw size={12} />Replay</button>
+              <button type="button" onClick={reset} className="flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-white px-3.5 py-2 font-mono text-[11.5px] text-neutral-700 transition-colors hover:text-ink"><RotateCcw size={12} />Replay</button>
             )}
           </div>
         </div>
@@ -63,25 +63,25 @@ export default function TrackingDemo() {
         <AnimatePresence initial={false}>
           {(phase === 'scanning' || phase === 'healed') && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ type: 'spring', stiffness: 160, damping: 24 }} className="overflow-hidden">
-              <div className="mt-4 grid gap-x-6 gap-y-1.5 border-t border-ink/[0.07] pt-4 sm:grid-cols-2">
+              <div className="mt-4 grid gap-x-6 gap-y-1.5 border-t border-neutral-200/80 pt-4 sm:grid-cols-2">
                 {SIGNALS.map(([name, kind, note], i) => (
                   <motion.div key={name} initial={{ opacity: 0, x: -8 }} animate={i < shown ? { opacity: 1, x: 0 } : { opacity: 0.18, x: 0 }} className="flex items-center gap-2 text-[12px]">
-                    <span className={cn('grid h-4 w-4 shrink-0 place-items-center rounded-full', kind === 'hit' ? 'bg-sage text-white' : kind === 'partial' ? 'bg-steel-300 text-white' : 'bg-coral-soft text-coral-deep')}>
+                    <span className={cn('grid h-4 w-4 shrink-0 place-items-center rounded-full', kind === 'hit' ? 'bg-accent text-white' : kind === 'partial' ? 'bg-neutral-300 text-white' : 'bg-danger-soft text-danger-deep')}>
                       {kind === 'hit' ? <Check size={10} strokeWidth={3} /> : kind === 'partial' ? <Minus size={10} strokeWidth={3} /> : <X size={10} strokeWidth={3} />}
                     </span>
-                    <span className="w-[74px] font-mono font-medium text-ink">{name}</span><span className="truncate text-steel-500">{note}</span>
+                    <span className="w-[74px] font-mono font-medium text-ink">{name}</span><span className="truncate text-neutral-600">{note}</span>
                   </motion.div>
                 ))}
               </div>
               <div className="mt-4 flex items-center gap-3">
-                <Crosshair size={15} className={phase === 'healed' ? 'text-sage' : 'animate-spin text-steel-400'} style={{ animationDuration: '2.4s' }} />
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-steel-100"><motion.div className="h-full rounded-full bg-sage" initial={{ width: 0 }} animate={{ width: phase === 'healed' ? '84%' : `${(shown / SIGNALS.length) * 70}%` }} transition={{ type: 'spring', stiffness: 70, damping: 18 }} /></div>
+                <Crosshair size={15} className={phase === 'healed' ? 'text-accent' : 'animate-spin text-neutral-500'} style={{ animationDuration: '2.4s' }} />
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-100"><motion.div className="h-full rounded-full bg-accent" initial={{ width: 0 }} animate={{ width: phase === 'healed' ? '84%' : `${(shown / SIGNALS.length) * 70}%` }} transition={{ type: 'spring', stiffness: 70, damping: 18 }} /></div>
                 <span className="w-24 text-right font-mono text-[12px] font-semibold tabular-nums text-ink">{phase === 'healed' ? '84% confident' : 'scoring…'}</span>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-        {phase === 'v1' && <p className="mt-3 text-[12.5px] text-steel-500">Your patch is attached to <code className="font-mono text-ink">#checkout-btn</code>. Ship a redesign and watch what a plain selector would do.</p>}
+        {phase === 'v1' && <p className="mt-3 text-[12.5px] text-neutral-600">Your patch is attached to <code className="font-mono text-ink">#checkout-btn</code>. Ship a redesign and watch what a plain selector would do.</p>}
       </div>
     </div>
   );
@@ -89,11 +89,11 @@ export default function TrackingDemo() {
 
 function Code({ title, children, active, dim }: { title: string; children: React.ReactNode; active?: boolean; dim?: boolean }) {
   return (
-    <div className={cn('rounded-2xl border bg-white p-4 transition-all duration-500', active ? 'border-ink/15 shadow-sm' : 'border-ink/[0.06]', dim && 'opacity-45')}>
-      <div className="mono-label mb-3">{title}</div><div className="space-y-0.5 font-mono text-[11.5px] leading-[1.7] text-steel-600">{children}</div>
+    <div className={cn('rounded-xl border bg-white p-4 transition-all duration-500', active ? 'border-neutral-300 shadow-sm' : 'border-neutral-200', dim && 'opacity-45')}>
+      <div className="mono-label mb-3">{title}</div><div className="space-y-0.5 font-mono text-[11.5px] leading-[1.7] text-neutral-700">{children}</div>
     </div>
   );
 }
-function L({ children, i = 0, hl }: { children: React.ReactNode; i?: number; hl?: 'sage' | 'coral' }) {
-  return <div className={cn('truncate rounded px-1.5 transition-colors duration-500', hl === 'sage' && 'bg-sage-soft text-sage-deep', hl === 'coral' && 'bg-coral-soft text-coral-deep')} style={{ paddingLeft: 6 + i * 14 }}>{children}</div>;
+function L({ children, i = 0, hl }: { children: React.ReactNode; i?: number; hl?: 'accent' | 'danger' }) {
+  return <div className={cn('truncate rounded px-1.5 transition-colors duration-500', hl === 'accent' && 'bg-accent-soft text-accent-deep', hl === 'danger' && 'bg-danger-soft text-danger-deep')} style={{ paddingLeft: 6 + i * 14 }}>{children}</div>;
 }

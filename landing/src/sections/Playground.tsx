@@ -1,134 +1,195 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, Check, Loader2, RotateCcw, Wrench } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { Check, Loader2, RotateCcw, Wrench } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useInView } from '../hooks/useInView';
 import { cn } from '../lib/cn';
 import { Dot, Pill } from '../ui/Badge';
+import { PrimaryButton } from '../ui/Button';
 import { SectionHeading } from '../ui/SectionHeading';
 import TelemetryChart from './TelemetryChart';
 
-type Phase = 'broken' | 'patching' | 'fixed';
-const N = 64;
-const initial = () => Array.from({ length: N }, (_, i) => 8 + (i / N) ** 1.6 * 70 + Math.sin(i * 0.8) * 3);
-const ERRORS = ['TypeError: submitOrder is not a function', 'Unhandled click · #checkout-btn', 'POST /api/orders → 0 (no request sent)', 'ReferenceError: handler is undefined'];
-const spring = { type: 'spring', stiffness: 220, damping: 22 } as const;
+type Phase = 'broken' | 'running' | 'fixed';
+type Level = 'ERROR' | 'WARN' | 'INFO' | 'STEP' | 'OK';
+interface Line { id: number; t: string; level: Level; text: string }
+
+const N = 56;
+const STAGES = [
+  { id: 'locate', label: 'Locate element', detail: '#checkout-btn · 84% match', ms: '38ms' },
+  { id: 'inject', label: 'Inject patch', detail: 'p_8f21 · setAttr + setStyle · reversible', ms: '12ms' },
+  { id: 'verify', label: 'Verify', detail: '17/17 checks · desktop + mobile', ms: '4.1s' }
+] as const;
+// targets per phase / stage: [p95 latency ms, error rate %, failed checkouts per min]
+const BROKEN: [number, number, number] = [1840, 38.4, 412], FIXED: [number, number, number] = [212, 0, 0];
+const MID: [number, number, number][] = [BROKEN, [1100, 22, 230], [480, 6, 60]];
+const spring = { type: 'spring', stiffness: 260, damping: 24 } as const;
+const clock = () => new Date().toLocaleTimeString('en-GB');
+const ramp = (a: number, b: number) => Array.from({ length: N }, (_, i) => a + (b - a) * (i / N) ** 1.4 + Math.sin(i * 0.9) * (b - a) * 0.03);
+const rid = () => Math.random().toString(36).slice(2, 8);
 
 export default function Playground() {
-  const [ref, inView] = useInView<HTMLDivElement>({ threshold: 0.2 });
-  const [phase, setPhase] = useState<Phase>('broken');
-  const [points, setPoints] = useState<number[]>(initial), [errors, setErrors] = useState(412);
-  const level = useRef(70), phaseRef = useRef<Phase>('broken'); phaseRef.current = phase;
-  const [toast, setToast] = useState(0);
-
-  useEffect(() => {
-    if (!inView) return;
-    const id = setInterval(() => {
-      const p = phaseRef.current, target = p === 'fixed' ? 2 : p === 'patching' ? 40 : 88;
-      level.current += (target - level.current) * (p === 'fixed' ? 0.12 : 0.05);
-      const noise = (Math.random() - 0.5) * (p === 'fixed' ? 1.6 : 9);
-      setPoints((pts) => [...pts.slice(1), Math.max(0, level.current + noise)]);
-      if (p !== 'fixed') setErrors((e) => e + 1 + Math.floor(Math.random() * (p === 'patching' ? 2 : 4)));
-    }, 140);
-    return () => clearInterval(id);
-  }, [inView]);
-  useEffect(() => { if (phase !== 'broken' || !inView) return; const id = setInterval(() => setToast((t) => t + 1), 1700); return () => clearInterval(id); }, [phase, inView]);
-
-  const apply = () => { setPhase('patching'); setTimeout(() => setPhase('fixed'), 900); };
-  const reset = () => { setPhase('broken'); level.current = 70; setPoints(initial()); setErrors(412); };
+  const [ref, inView] = useInView<HTMLDivElement>({ threshold: 0.15 });
+  const [phase, setPhase] = useState<Phase>('broken'); const [stage, setStage] = useState(-1);
+  const [m, setM] = useState({ lat: BROKEN[0], err: BROKEN[1], fail: BROKEN[2] });
+  const [latPts, setLatPts] = useState(() => ramp(300, 1800)), [failPts, setFailPts] = useState(() => ramp(20, 400));
+  const [logs, setLogs] = useState<Line[]>([]);
+  const cur = useRef({ ...m }), phaseRef = useRef<Phase>('broken'), stageRef = useRef(-1), lineId = useRef(0), timers = useRef<number[]>([]);
+  phaseRef.current = phase; stageRef.current = stage;
   const fixed = phase === 'fixed', broken = phase === 'broken';
 
+  const push = (level: Level, text: string) => setLogs((l) => [...l.slice(-8), { id: lineId.current++, t: clock(), level, text }]);
+
+  // telemetry + log stream tick (paused while off-screen)
+  useEffect(() => {
+    if (!inView) return;
+    let n = 0;
+    const id = setInterval(() => {
+      n++;
+      const p = phaseRef.current, tgt = p === 'fixed' ? FIXED : p === 'running' ? MID[Math.max(0, stageRef.current)] : BROKEN, k = p === 'fixed' ? 0.2 : 0.16;
+      const c = cur.current; c.lat += (tgt[0] - c.lat) * k; c.err += (tgt[1] - c.err) * k; c.fail += (tgt[2] - c.fail) * k;
+      const jit = p === 'fixed' ? 0.03 : 0.1;
+      const lat = Math.max(120, c.lat * (1 + (Math.random() - 0.5) * jit)), fail = Math.max(0, c.fail * (1 + (Math.random() - 0.5) * jit * 1.5));
+      setM({ lat, err: Math.max(0, c.err + (Math.random() - 0.5) * (p === 'fixed' ? 0.02 : 1.2)), fail });
+      setLatPts((a) => [...a.slice(1), lat]); setFailPts((a) => [...a.slice(1), fail]);
+      if (p === 'broken' && n % 5 === 0) {
+        const r = Math.random();
+        push(r < 0.55 ? 'ERROR' : r < 0.8 ? 'WARN' : 'ERROR', r < 0.55 ? `POST /api/checkout 500 ${1600 + Math.round(Math.random() * 500)}ms  TypeError: submitOrder is not a function` : r < 0.8 ? 'layout overflow +14px  .cart-summary > button.checkout' : 'unhandled click  button.checkout  (handler undefined)');
+      } else if (p === 'fixed' && n % 7 === 0) push(Math.random() < 0.7 ? 'OK' : 'INFO', Math.random() < 0.7 ? `POST /api/checkout 200 ${200 + Math.round(Math.random() * 28)}ms` : `order.created  ord_${rid()}`);
+    }, 120);
+    return () => clearInterval(id);
+  }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+  const later = (fn: () => void, ms: number) => timers.current.push(window.setTimeout(fn, ms));
+
+  const simulate = () => {
+    if (phase !== 'broken') return;
+    setPhase('running'); setStage(0); push('STEP', '→ locate   #checkout-btn   84% match   38ms');
+    later(() => { setStage(1); push('STEP', '→ inject   patch p_8f21   reversible · 0 redeploys   12ms'); }, 800);
+    later(() => { setStage(2); push('STEP', '→ verify   17/17 checks passed   desktop + mobile'); }, 1600);
+    later(() => { setPhase('fixed'); setStage(3); push('OK', 'PATCH LIVE  checkout recovered  200 OK'); }, 2500);
+  };
+  const reset = () => { timers.current.forEach(clearTimeout); timers.current = []; setPhase('broken'); setStage(-1); cur.current = { lat: BROKEN[0], err: BROKEN[1], fail: BROKEN[2] }; setM({ lat: BROKEN[0], err: BROKEN[1], fail: BROKEN[2] }); setLatPts(ramp(300, 1800)); setFailPts(ramp(20, 400)); setLogs([]); };
+
+  const tiles = useMemo(() => [
+    { k: 'p95 latency', v: Math.round(m.lat).toLocaleString(), u: 'ms', slo: m.lat < 500, note: 'SLO 500ms' },
+    { k: 'error rate', v: m.err.toFixed(1), u: '%', slo: m.err < 1, note: 'SLO 1.0%' },
+    { k: 'failed checkouts', v: Math.round(m.fail).toLocaleString(), u: '/min', slo: m.fail < 5, note: 'SLO 5/min' },
+    { k: 'patch', v: fixed ? 'p_8f21' : '—', u: fixed ? 'live' : 'none', slo: fixed, note: fixed ? 'v1.4.2 + patch' : 'v1.4.2' }
+  ], [m, fixed]);
+
   return (
-    <section id="playground" className="section-pad relative overflow-hidden bg-gradient-to-b from-transparent via-alabaster-200/60 to-transparent">
+    <section id="playground" className="section-pad relative">
       <div className="container-x" ref={ref}>
-        <SectionHeading eyebrow="Live playground" title={<>Watch a regression <span className="font-serif font-normal italic">level out</span>.</>}>
-          A checkout button ships broken and the error rate climbs. Apply the patch: the layout resolves, the handler is fixed, and telemetry flattens — no redeploy.
+        <SectionHeading eyebrow="Live playground" title="Simulate the fix. Watch production recover.">
+          Checkout is failing in production. Run the patch: PATCHWORK locates the element, injects a reversible fix and verifies it — and the telemetry follows. No redeploy.
         </SectionHeading>
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-[1.05fr_1fr]">
-          {/* storefront preview */}
-          <motion.div layout transition={spring} className="glass-strong overflow-hidden rounded-[28px]">
-            <div className="flex items-center gap-3 border-b border-ink/[0.07] bg-white/50 px-5 py-3">
-              <div className="flex gap-1.5">{[0, 1, 2].map((i) => <i key={i} className="h-2.5 w-2.5 rounded-full bg-steel-200" />)}</div>
-              <div className="mono-label flex-1 truncate rounded-full bg-white/70 px-3 py-1 normal-case tracking-normal">shop.example.com/checkout</div>
-              <Pill tone={fixed ? 'sage' : 'coral'}><Dot tone={fixed ? 'sage' : 'coral'} pulse={broken} />{fixed ? 'healthy' : 'regression'}</Pill>
-            </div>
-            <div className="relative p-6 sm:p-8">
-              <div className="mono-label mb-5">Order summary</div>
-              <div className="space-y-3 text-[14px]">
-                <div className="flex justify-between text-steel-600"><span>Aurora Headphones × 1</span><span>$129.00</span></div>
-                <div className="flex justify-between text-steel-600"><span>Shipping</span><span>Free</span></div>
-                <div className="h-px bg-ink/[0.08]" />
-                <div className="flex items-start justify-between text-[16px] font-semibold text-ink">
-                  <span>Total</span>
-                  <span className={cn('origin-right text-right transition-all duration-700', !fixed && 'w-14 break-all leading-tight text-coral-deep')}>$129.00</span>
+        <div className="surface-raised mt-12 overflow-hidden">
+          {/* header: incident + stage tracker */}
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-neutral-200/80 bg-neutral-50 px-5 py-3">
+            <div className="flex items-center gap-3 font-mono text-[12px] text-neutral-800"><Dot tone={fixed ? 'accent' : 'danger'} pulse={!fixed} /><span className="font-medium">INC-2041</span><span className="text-neutral-500">/</span><span className="text-neutral-700">checkout-api · prod · eu-west-1</span></div>
+            <ol className="flex items-center gap-1.5" aria-label="Patch pipeline">
+              {STAGES.map((s, i) => {
+                const done = stage > i, active = stage === i && phase === 'running';
+                return (
+                  <li key={s.id} className="flex items-center gap-1.5">
+                    <span className={cn('flex items-center gap-1.5 rounded-md border px-2 py-1 font-mono text-[11px] font-medium transition-colors duration-300', done ? 'border-accent-line bg-accent-soft text-accent-deep' : active ? 'border-neutral-900 bg-white text-neutral-900' : 'border-neutral-200 bg-white text-neutral-500')}>
+                      {done ? <Check size={11} strokeWidth={3} /> : active ? <Loader2 size={11} className="animate-spin" /> : <span className="text-[10px]">0{i + 1}</span>}{s.id}
+                      <span className={cn('hidden tabular-nums sm:inline', done ? 'text-accent-deep/70' : 'text-neutral-400')}>{done ? s.ms : ''}</span>
+                    </span>
+                    {i < STAGES.length - 1 && <span className={cn('h-px w-4 transition-colors duration-300', done ? 'bg-accent' : 'bg-neutral-300')} />}
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+
+          <div className="grid gap-px bg-neutral-200/80 lg:grid-cols-12">
+            {/* storefront + response status */}
+            <div className="space-y-5 bg-white p-6 lg:col-span-5 lg:p-8">
+              <div className="mono-label flex items-center justify-between"><span>shop.example.com/checkout</span><span className="normal-case tracking-normal text-neutral-600">&lt;button.checkout&gt;</span></div>
+              <div className="inset p-5">
+                <div className="space-y-2.5 text-[14px] text-neutral-700">
+                  <div className="flex justify-between"><span>Aurora Headphones × 1</span><span className="font-mono text-neutral-900">$129.00</span></div>
+                  <div className="flex justify-between"><span>Shipping</span><span className="font-mono">$0.00</span></div>
+                  <div className="h-px bg-neutral-200" />
+                  <div className="flex items-start justify-between text-[15px] font-semibold text-neutral-900"><span>Total</span>
+                    <span className={cn('origin-right text-right font-mono transition-all duration-700', !fixed && 'w-14 break-all leading-tight text-danger-deep')}>$129.00</span></div>
+                </div>
+                <div className="relative mt-5">
+                  <motion.button type="button" tabIndex={-1} aria-disabled={!fixed} animate={fixed ? { rotate: 0, x: 0 } : { rotate: -1, x: 12 }} transition={spring}
+                    className={cn('block w-full select-none px-5 py-3.5 text-[15px] font-medium transition-[background-color,color,opacity] duration-500', fixed ? 'bg-ink text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]' : 'cursor-not-allowed bg-neutral-300 text-white opacity-70')} style={{ borderRadius: fixed ? 10 : 4 }}>
+                    <span className={cn('inline-flex items-center justify-center gap-2', !fixed && 'max-w-[7rem] whitespace-normal text-center leading-tight')}>{fixed && <Check size={15} className="text-accent-bright" />}Place order</span>
+                  </motion.button>
+                </div>
+                <div className="mt-3 h-4 font-mono text-[11px]">{fixed ? <span className="text-accent-deep">onClick = submitOrder · layout stable</span> : <span className="text-danger-deep">onClick = undefined · overflow +14px</span>}</div>
+              </div>
+
+              {/* HTTP status — flips like a mechanical counter */}
+              <div className={cn('flex items-center gap-4 rounded-lg border p-4 transition-colors duration-500', fixed ? 'border-accent-line bg-accent-soft' : 'border-danger-line bg-danger-soft')} role="status" aria-live="polite">
+                <div className="relative h-[52px] w-[88px] overflow-hidden [perspective:400px]">
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.span key={fixed ? '200' : '500'} initial={{ y: 26, opacity: 0, rotateX: -70 }} animate={{ y: 0, opacity: 1, rotateX: 0 }} exit={{ y: -26, opacity: 0, rotateX: 70 }} transition={{ type: 'spring', stiffness: 300, damping: 26 }}
+                      className={cn('absolute inset-0 grid place-items-center font-mono text-[44px] font-semibold leading-none tracking-[-0.04em] tabular-nums', fixed ? 'text-accent' : 'text-danger')}>{fixed ? '200' : '500'}</motion.span>
+                  </AnimatePresence>
+                </div>
+                <div className="min-w-0 font-mono">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div key={fixed ? 'ok' : phase === 'running' ? 'run' : 'bad'} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.18 }}
+                      className={cn('text-[14px] font-semibold', fixed ? 'text-accent-deep' : 'text-danger-deep')}>{fixed ? 'OK • Patch Injected' : phase === 'running' ? 'Injecting patch…' : 'Checkout Failure'}</motion.div>
+                  </AnimatePresence>
+                  <div className="mt-0.5 text-[11.5px] text-neutral-700">POST /api/checkout · {fixed ? 'steady' : 'failing'}</div>
                 </div>
               </div>
-
-              <div className="relative mt-7 overflow-visible">
-                <motion.button type="button" aria-disabled={!fixed} tabIndex={-1} animate={fixed ? { rotate: 0, x: 0, scale: 1 } : { rotate: -1.2, x: 14, scale: 1.02 }} transition={spring}
-                  className={cn('block w-full select-none px-5 py-4 text-[15px] font-medium transition-[background-color,opacity,color,box-shadow] duration-700', fixed ? 'bg-ink text-alabaster-50 shadow-pill' : 'cursor-not-allowed bg-steel-300 text-white opacity-60')} style={{ borderRadius: fixed ? 14 : 6 }}>
-                  <span className={cn('inline-flex items-center justify-center gap-2 transition-all duration-500', !fixed && 'max-w-[7rem] whitespace-normal text-center leading-tight')}>
-                    {fixed && <Check size={16} className="text-sage" />}Place order
-                  </span>
-                </motion.button>
-                {!fixed && <span className="mono-label absolute -bottom-6 left-1 normal-case tracking-normal text-coral-deep">onClick = undefined · layout overflow +14px</span>}
-              </div>
-
-              <div className="mt-10 min-h-[84px]">
-                <AnimatePresence mode="wait">
-                  {broken || phase === 'patching' ? (
-                    <motion.div key="err" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-1.5">
-                      {[0, 1].map((k) => <div key={k + toast} className="flex items-center gap-2 rounded-lg border border-coral-line bg-coral-soft px-3 py-1.5 font-mono text-[11px] text-coral-deep"><AlertTriangle size={12} />{ERRORS[(toast + k) % ERRORS.length]}</div>)}
-                    </motion.div>
-                  ) : (
-                    <motion.div key="ok" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2.5 rounded-lg border border-sage-line bg-sage-soft px-3.5 py-3 text-[13px] text-sage-deep">
-                      <Check size={15} /> Order submitted · handler resolved · layout stable
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-              <div className="mt-6 flex items-center justify-between border-t border-ink/[0.07] pt-4 font-mono text-[11px] text-steel-500"><span>release v2.14.0</span><span className={fixed ? 'text-sage-deep' : 'text-coral-deep'}>{fixed ? 'patched live · 0 redeploys' : 'broken since deploy'}</span></div>
-            </div>
-          </motion.div>
-
-          {/* telemetry + patch controls */}
-          <div className="flex flex-col gap-6">
-            <div className="glass-strong rounded-[28px] p-6 sm:p-7">
-              <div className="flex items-start justify-between">
-                <div><div className="mono-label">Errors since deploy</div>
-                  <div className={cn('mt-2 font-display text-[54px] font-semibold leading-none tracking-[-0.05em] tabular-nums transition-colors duration-700', fixed ? 'text-sage-deep' : 'text-ink')}>{errors.toLocaleString()}</div></div>
-                <div className="text-right"><div className="mono-label">Error rate</div>
-                  <div className={cn('mt-2 font-mono text-[20px] font-semibold tabular-nums transition-colors duration-700', fixed ? 'text-sage-deep' : 'text-coral-deep')}>{Math.round(points[points.length - 1])}<span className="text-[12px] font-normal text-steel-500"> /min</span></div></div>
-              </div>
-              <div className="mt-5"><TelemetryChart points={points} healthy={fixed} /></div>
-              <div className="mono-label mt-1 flex justify-between normal-case tracking-normal"><span>−9 min</span><span>now</span></div>
             </div>
 
-            <div className="glass rounded-[24px] p-5">
-              <div className="mono-label mb-3 flex items-center justify-between">Patch · p_8f21<span className={fixed ? 'text-sage-deep' : 'text-steel-500'}>{fixed ? 'live' : 'draft'}</span></div>
-              <div className="overflow-hidden rounded-xl border border-ink/[0.08] bg-ink p-3.5 font-mono text-[12px] leading-[1.75]">
-                <div className="text-steel-400">{'<button id="checkout-btn"'}</div>
-                <AnimatePresence mode="wait" initial={false}>
-                  {fixed ? (
-                    <motion.div key="a" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="-mx-3.5 bg-sage/15 px-3.5 text-[#9FD3B8]">{'+ onClick={submitOrder}  style={{ width: "100%" }}'}</motion.div>
-                  ) : (
-                    <motion.div key="b" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} className="-mx-3.5 bg-coral/15 px-3.5 text-[#F2A59D]">{'- onClick={undefined}  style={{ width: "108%" }}'}</motion.div>
-                  )}
-                </AnimatePresence>
-                <div className="text-steel-400">{'>Place order</button>'}</div>
+            {/* telemetry */}
+            <div className="space-y-4 bg-white p-6 lg:col-span-7 lg:p-8">
+              <div className="mono-label flex items-center justify-between"><span>Real-time telemetry</span><span className="flex items-center gap-1.5 normal-case tracking-normal"><Dot tone="accent" pulse />live · 8 Hz</span></div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {tiles.map((t) => (
+                  <div key={t.k} className="inset p-3.5">
+                    <div className="mono-label text-[10px]">{t.k}</div>
+                    <div className="mt-2 flex items-baseline gap-1"><span className={cn('font-mono text-[24px] font-medium leading-none tracking-[-0.03em] tabular-nums transition-colors duration-500', t.slo ? 'text-accent-deep' : 'text-danger-deep')}>{t.v}</span><span className="font-mono text-[11px] text-neutral-600">{t.u}</span></div>
+                    <div className="mt-2.5"><Pill tone={t.slo ? 'accent' : 'danger'} className="text-[10px]">{t.k === 'patch' ? t.note : t.slo ? 'within SLO' : t.note}</Pill></div>
+                  </div>
+                ))}
               </div>
-              <div className="mt-4 flex items-center gap-3">
-                <motion.button type="button" onClick={apply} disabled={!broken} whileHover={broken ? { y: -2 } : undefined} whileTap={broken ? { scale: 0.97 } : undefined} transition={spring}
-                  className={cn('relative flex flex-1 items-center justify-center gap-2.5 overflow-hidden rounded-full px-6 py-3.5 text-[15px] font-medium transition-colors duration-500', broken ? 'bg-ink text-alabaster-50 shadow-pill' : fixed ? 'bg-sage text-white' : 'bg-steel-600 text-white')}>
-                  {broken && <span aria-hidden className="pointer-events-none absolute inset-x-3 top-0 h-1/2 rounded-b-[999px] bg-gradient-to-b from-white/20 to-transparent" />}
-                  {phase === 'patching' ? <><Loader2 size={16} className="animate-spin" />Applying patch…</> : fixed ? <><Check size={16} />Patch live · 0 redeploys</> : <><Wrench size={16} />Apply Patch</>}
-                </motion.button>
-                <button type="button" onClick={reset} aria-label="Replay the demo" className="grid h-[50px] w-[50px] place-items-center rounded-full border border-ink/10 text-steel-600 transition-colors hover:border-ink/30 hover:text-ink"><RotateCcw size={16} /></button>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="inset p-3.5"><div className="mono-label mb-2 flex justify-between text-[10px]"><span>p95 latency · ms</span><span className="normal-case tracking-normal text-neutral-600">−60s → now</span></div><TelemetryChart points={latPts} max={2200} healthy={fixed} threshold={500} height={132} /></div>
+                <div className="inset p-3.5"><div className="mono-label mb-2 flex justify-between text-[10px]"><span>failed checkouts / min</span><span className="normal-case tracking-normal text-neutral-600">−60s → now</span></div><TelemetryChart points={failPts} max={480} healthy={fixed} threshold={5} height={132} /></div>
               </div>
             </div>
           </div>
+
+          {/* terminal */}
+          <div className="border-t border-neutral-200/80 bg-neutral-950 px-5 py-4 font-mono text-[12px] leading-[1.7] text-neutral-300">
+            <div className="mb-2 flex items-center justify-between text-[10.5px] uppercase tracking-[0.12em] text-neutral-500"><span>stdout · checkout-api</span><span>{logs.length ? `${logs.length} lines` : 'waiting for traffic…'}</span></div>
+            <div className="h-[158px] overflow-hidden" aria-live="off">
+              <AnimatePresence initial={false}>
+                {logs.slice(-8).map((l) => (
+                  <motion.div key={l.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="flex gap-3 whitespace-nowrap">
+                    <span className="text-neutral-600">{l.t}</span>
+                    <span className={cn('w-12 font-medium', l.level === 'ERROR' ? 'text-red-400' : l.level === 'WARN' ? 'text-amber-400' : l.level === 'OK' ? 'text-emerald-400' : l.level === 'STEP' ? 'text-neutral-100' : 'text-neutral-400')}>{l.level}</span>
+                    <span className={cn('truncate', l.level === 'OK' ? 'text-emerald-300' : l.level === 'ERROR' ? 'text-red-200' : 'text-neutral-300')}>{l.text}</span>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              <span className="animate-blink text-neutral-400">▍</span>
+            </div>
+          </div>
+
+          {/* controls */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200/80 bg-neutral-50 px-5 py-3.5">
+            <p className="font-mono text-[11.5px] text-neutral-700">{fixed ? 'Recovered with 0 redeploys. The patch is reversible and audited.' : phase === 'running' ? `Running stage 0${stage + 1} / 03 …` : 'Simulated telemetry — the real Studio streams this from visitors’ browsers.'}</p>
+            <div className="flex items-center gap-2">
+              <PrimaryButton onClick={simulate} disabled={phase !== 'broken'} icon={phase === 'running' ? <Loader2 size={13} className="animate-spin" /> : fixed ? <Check size={13} /> : <Wrench size={13} />}>
+                {phase === 'running' ? 'Injecting…' : fixed ? 'Patch live · 0 redeploys' : 'Simulate Fix'}
+              </PrimaryButton>
+              <button type="button" onClick={reset} aria-label="Replay the demo" className="grid h-11 w-11 place-items-center rounded-xl border border-neutral-300 bg-white text-neutral-700 shadow-subtle transition-colors hover:border-neutral-400 hover:text-neutral-900"><RotateCcw size={16} /></button>
+            </div>
+          </div>
         </div>
-        <p className="mono-label mt-6 text-center normal-case tracking-normal">Simulated telemetry for illustration — in the real Studio these numbers come from visitors’ browsers.</p>
       </div>
     </section>
   );

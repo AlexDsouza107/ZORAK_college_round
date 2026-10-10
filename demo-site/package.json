@@ -1,1 +1,6 @@
-{ "name": "@patchwork/demo-site", "version": "1.0.0", "private": true, "type": "module" }
+{
+  "name": "@patchwork/demo-site",
+  "version": "1.0.1",
+  "private": true,
+  "type": "module"
+}

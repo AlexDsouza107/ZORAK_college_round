@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 
+/** 3D palette — mirrors the Tailwind theme: neutral wires, one emerald accent, red strictly for runtime errors. */
 export const COLORS = {
-  steel: new THREE.Color('#6F7A87'),
-  steelDim: new THREE.Color('#99A3AF'),
-  coral: new THREE.Color('#E26B5F'),
-  sage: new THREE.Color('#5A9C7E'),
-  ink: new THREE.Color('#14151A'),
-  fog: new THREE.Color('#F7F5F0')
+  steel: new THREE.Color('#6B7280'),
+  steelDim: new THREE.Color('#A3A3A3'),
+  danger: new THREE.Color('#E5484D'),
+  accent: new THREE.Color('#059669'),
+  ink: new THREE.Color('#111827'),
+  fog: new THREE.Color('#FBFBF9')
 };

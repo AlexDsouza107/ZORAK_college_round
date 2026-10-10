@@ -35,3 +35,5 @@ Optional: copy `.env.example` to `.env` and add `ANTHROPIC_API_KEY` for Claude-p
 With `npm start` running: `npm run test:all` (core engine, visual editor, full demo storyline, Chrome extension).
 
 See **docs/PATCHWORK_Manual.docx** for the complete manual, demo script and architecture notes.
+
+See **CHANGELOG.md** for release notes.

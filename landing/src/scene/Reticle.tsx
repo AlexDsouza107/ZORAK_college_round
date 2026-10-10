@@ -81,9 +81,9 @@ export default function Reticle({ store }: { store: SceneStore }) {
         <group ref={br}>
           <lineSegments geometry={geo.brackets}><lineBasicMaterial ref={(x) => { mats.current.br = x; }} color={COLORS.ink} transparent opacity={0} depthTest={false} /></lineSegments>
         </group>
-        <lineLoop ref={arc} geometry={geo.ring}><lineBasicMaterial ref={(x) => { mats.current.arc = x; }} color={COLORS.sage} transparent opacity={0} depthTest={false} /></lineLoop>
+        <lineLoop ref={arc} geometry={geo.ring}><lineBasicMaterial ref={(x) => { mats.current.arc = x; }} color={COLORS.accent} transparent opacity={0} depthTest={false} /></lineLoop>
       </group>
-      <mesh ref={shock} geometry={geo.shock} visible={false}><meshBasicMaterial ref={(x) => { mats.current.shock = x; }} color={COLORS.sage} transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} /></mesh>
+      <mesh ref={shock} geometry={geo.shock} visible={false}><meshBasicMaterial ref={(x) => { mats.current.shock = x; }} color={COLORS.accent} transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} /></mesh>
     </>
   );
 }

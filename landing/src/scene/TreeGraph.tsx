@@ -15,14 +15,14 @@ const edgesFor = (w: number, h: number, d: number) => {
 
 function makeLabelTexture(text: string) {
   const c = document.createElement('canvas'); c.width = 320; c.height = 64;
-  const g = c.getContext('2d')!; g.font = '500 26px "JetBrains Mono", ui-monospace, Menlo, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  const g = c.getContext('2d')!; g.font = '500 26px "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle';
   g.fillStyle = '#fff'; g.fillText(text, 160, 33);
   const t = new THREE.CanvasTexture(c); t.anisotropy = 4; t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 
 interface Props { store: SceneStore; reduced: boolean; pointerLocal: THREE.Vector3; groupRef: React.RefObject<THREE.Group> }
 
-/** The wireframe component tree: nodes are spring-driven (they ease away from the cursor), wires follow them, broken nodes pulse coral. */
+/** The wireframe component tree: nodes are spring-driven (they ease away from the cursor), wires follow them, broken nodes pulse red. */
 export default function TreeGraph({ store, reduced, pointerLocal, groupRef }: Props) {
   const N = TREE.nodes.length;
   const edgeGeo = useMemo(() => {
@@ -69,7 +69,7 @@ export default function TreeGraph({ store, reduced, pointerLocal, groupRef }: Pr
       const obj = store.objs[i]; if (obj) obj.position.set(R.cur[o], R.cur[o + 1], R.cur[o + 2]);
     }
 
-    /* ---- per-node look: colour state machine steel → coral(pulse) → sage, depth-of-field falloff ---- */
+    /* ---- per-node look: colour state machine neutral → red (pulse) → emerald, depth-of-field falloff ---- */
     const focusZ = 0;
     for (let i = 0; i < N; i++) {
       const n = TREE.nodes[i], obj = store.objs[i]; if (!obj) continue;
@@ -78,8 +78,9 @@ export default function TreeGraph({ store, reduced, pointerLocal, groupRef }: Pr
       const pulse = reduced ? 0.6 : 0.5 + 0.5 * Math.sin(t * 2.3 + i * 0.7);
       tmp.v.setFromMatrixPosition(obj.matrixWorld);
       const dof = Math.min(1, Math.max(0, (Math.abs(tmp.v.z - focusZ) - 0.9) / 3.2));
+      if (n.broken) { tmp.v.project(state.camera); store.screen[i * 2] = ((tmp.v.x + 1) / 2) * state.size.width; store.screen[i * 2 + 1] = ((1 - tmp.v.y) / 2) * state.size.height; }
       const col = tmp.c.copy(COLORS.steel);
-      if (n.broken) { col.lerp(COLORS.coral, broken * (0.5 + 0.5 * pulse)); col.lerp(COLORS.sage, f); }
+      if (n.broken) { col.lerp(COLORS.danger, broken * (0.5 + 0.5 * pulse)); col.lerp(COLORS.accent, f); }
       const hov = store.hovered === i ? 1 : 0;
       const base = n.depth === 0 ? 1 : 0.9;
       const em = R.edgeMats[i]; if (em) { em.color.copy(col); em.opacity = Math.min(1, base + broken * 0.2 * pulse) * (1 - 0.4 * dof); }
@@ -100,7 +101,7 @@ export default function TreeGraph({ store, reduced, pointerLocal, groupRef }: Pr
       pos.array.set([px, py, pz, px, my, pz, px, my, pz, cx, my, cz, cx, my, cz, cx, cy, cz], o);
       const f = store.fixed[c], broken = cn.broken ? 1 - f : 0, pulse = reduced ? 0.6 : 0.5 + 0.5 * Math.sin(t * 2.3 + c * 0.7);
       const col = tmp.c.copy(COLORS.steelDim);
-      if (cn.broken) { col.lerp(COLORS.coral, broken * (0.55 + 0.45 * pulse)); col.lerp(COLORS.sage, f); }
+      if (cn.broken) { col.lerp(COLORS.danger, broken * (0.55 + 0.45 * pulse)); col.lerp(COLORS.accent, f); }
       for (let v = 0; v < 6; v++) { colA.array[o + v * 3] = col.r; colA.array[o + v * 3 + 1] = col.g; colA.array[o + v * 3 + 2] = col.b; }
     }
     pos.needsUpdate = true; colA.needsUpdate = true;
@@ -117,12 +118,12 @@ export default function TreeGraph({ store, reduced, pointerLocal, groupRef }: Pr
               <lineBasicMaterial ref={(m) => { refs.current.edgeMats[i] = m; }} color={COLORS.steel} transparent fog />
             </lineSegments>
             <lineSegments geometry={edgesFor(w, h, d)} ref={(o) => { refs.current.halos[i] = o; }}>
-              <lineBasicMaterial ref={(m) => { refs.current.haloMats[i] = m; }} color={COLORS.coral} transparent opacity={0} depthWrite={false} fog />
+              <lineBasicMaterial ref={(m) => { refs.current.haloMats[i] = m; }} color={COLORS.danger} transparent opacity={0} depthWrite={false} fog />
             </lineSegments>
             <mesh
-              onPointerOver={(e) => { if (n.broken && !store.fixedTarget[i]) { e.stopPropagation(); store.hovered = i; document.body.style.cursor = 'none'; } }}
-              onPointerOut={() => { if (store.hovered === i) { store.hovered = -1; document.body.style.cursor = ''; } }}
-              onClick={(e) => { if (n.broken) { e.stopPropagation(); patchNode(store, i); document.body.style.cursor = ''; } }}
+              onPointerOver={(e) => { if (n.broken && !store.fixedTarget[i]) { e.stopPropagation(); store.hovered = i; } }}
+              onPointerOut={() => { if (store.hovered === i) store.hovered = -1; }}
+              onClick={(e) => { if (n.broken) { e.stopPropagation(); patchNode(store, i); } }}
               onPointerDown={(e) => { if (n.broken && e.pointerType === 'touch') patchNode(store, i); }}>
               <boxGeometry args={[w * 1.3, h * 2.3, d * 1.4]} />
               <meshBasicMaterial transparent opacity={0} depthWrite={false} />

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, Copy, Github, Terminal } from 'lucide-react';
+import { ArrowUpRight, Check, Copy, Github, Terminal } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { GITHUB_URL, STUDIO_URL } from '../lib/env';
 import { cn } from '../lib/cn';
@@ -23,13 +23,13 @@ function CopyCommand({ command }: { command: string }) {
     setCopied(true); setTimeout(() => setCopied(false), 1800);
   };
   return (
-    <button type="button" onClick={copy} aria-label={`Copy ${command}`} className="group flex w-full max-w-md items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3.5 text-left font-mono text-[13.5px] text-alabaster-100 transition-colors hover:border-sage/50 hover:bg-white/10">
-      <Terminal size={16} className="shrink-0 text-steel-400" />
-      <span className="flex-1 truncate"><span className="text-sage">$</span> {command}</span>
-      <span className="relative grid h-7 w-7 place-items-center rounded-lg bg-white/10 text-steel-300 transition-colors group-hover:text-white">
+    <button type="button" onClick={copy} aria-label={`Copy ${command}`} className="group flex w-full max-w-md items-center gap-3 rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-3 text-left font-mono text-[13.5px] text-neutral-100 shadow-subtle transition-colors hover:border-neutral-600">
+      <Terminal size={15} className="shrink-0 text-neutral-500" />
+      <span className="flex-1 truncate"><span className="text-emerald-400">$</span> {command}</span>
+      <span className="grid h-7 w-7 place-items-center rounded-md bg-white/10 text-neutral-400 transition-colors group-hover:text-white">
         <AnimatePresence mode="wait" initial={false}>
-          <motion.span key={copied ? 'c' : 'k'} initial={{ scale: 0.4, opacity: 0, rotate: -30 }} animate={{ scale: 1, opacity: 1, rotate: 0 }} exit={{ scale: 0.4, opacity: 0 }} transition={{ type: 'spring', stiffness: 500, damping: 24 }}>
-            {copied ? <Check size={15} className="text-sage" /> : <Copy size={15} />}
+          <motion.span key={copied ? 'c' : 'k'} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.4, opacity: 0 }} transition={{ type: 'spring', stiffness: 500, damping: 24 }}>
+            {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
           </motion.span>
         </AnimatePresence>
       </span>
@@ -37,29 +37,35 @@ function CopyCommand({ command }: { command: string }) {
   );
 }
 
+const LinkCard = ({ href, children, external }: { href: string; children: React.ReactNode; external?: boolean }) => (
+  <a href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})} className="surface group flex w-full max-w-xs items-center justify-between px-4 py-3.5 text-[14.5px] font-medium text-neutral-900 transition-colors hover:border-neutral-300">
+    <span className="flex items-center gap-2.5">{children}</span><ArrowUpRight size={15} className="text-neutral-500 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-neutral-900" />
+  </a>
+);
+
 export default function Footer() {
   const status = useStudioStatus();
   const label = status === 'up' ? 'All Systems Operational' : status === 'checking' ? 'Checking status…' : 'Demo mode · Studio not running';
   return (
-    <footer className="relative mt-10 bg-ink text-alabaster-100">
-      <div className="mx-auto w-full max-w-[1264px] px-5 py-20 sm:px-8 md:py-24">
-        <div className="grid gap-14 md:grid-cols-[1.3fr_1fr]">
+    <footer className="relative mt-8 border-t border-neutral-200 bg-canvas-sunken">
+      <div className="mx-auto w-full max-w-[1264px] px-5 py-16 sm:px-8 md:py-20">
+        <div className="grid gap-12 md:grid-cols-[1.3fr_1fr]">
           <div>
-            <Logo light />
-            <h2 className="mt-8 max-w-lg font-display text-[38px] font-semibold leading-[1.02] tracking-[-0.04em] sm:text-5xl">Hotfix the <span className="font-serif font-normal italic text-[#9FD3B8]">Internet.</span></h2>
-            <p className="mt-4 max-w-md text-[15.5px] leading-relaxed text-steel-300">Patch live sites visually, keep patches attached through redesigns, and roll back before anyone notices.</p>
-            <div className="mt-8"><CopyCommand command="npm i @patchwork/runtime" /></div>
+            <Logo />
+            <h2 className="mt-7 max-w-lg text-[34px] font-semibold leading-[1.05] tracking-[-0.035em] text-neutral-900 sm:text-[42px]">Hotfix the Internet.</h2>
+            <p className="mt-3 max-w-md text-[15.5px] leading-relaxed text-neutral-700">Patch live sites visually, keep patches attached through redesigns, and roll back before anyone notices.</p>
+            <div className="mt-7"><CopyCommand command="npm i @patchwork/runtime" /></div>
           </div>
           <div className="flex flex-col gap-3 md:items-end">
-            <a href={STUDIO_URL} className="group flex w-full max-w-xs items-center justify-between rounded-2xl border border-white/10 px-5 py-4 text-[15px] font-medium transition-colors hover:border-sage/50 hover:bg-white/5">Open Visual Studio<span className="transition-transform duration-300 group-hover:translate-x-1">→</span></a>
-            <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="group flex w-full max-w-xs items-center justify-between rounded-2xl border border-white/10 px-5 py-4 text-[15px] font-medium transition-colors hover:border-sage/50 hover:bg-white/5"><span className="flex items-center gap-2.5"><Github size={17} />GitHub repository</span><span className="transition-transform duration-300 group-hover:translate-x-1">↗</span></a>
+            <LinkCard href={STUDIO_URL}>Open Visual Studio</LinkCard>
+            <LinkCard href={GITHUB_URL} external><Github size={16} />GitHub repository</LinkCard>
           </div>
         </div>
-        <div className="mt-16 flex flex-col items-start justify-between gap-5 border-t border-white/10 pt-7 sm:flex-row sm:items-center">
-          <span className={cn('inline-flex items-center gap-2.5 rounded-full border px-3.5 py-1.5 font-mono text-[11.5px] font-medium', status === 'up' ? 'border-sage/40 bg-sage/10 text-[#9FD3B8]' : status === 'down' ? 'border-white/15 bg-white/5 text-steel-300' : 'border-white/10 text-steel-400')} role="status">
-            <span className="relative flex h-2 w-2"><span className={cn('absolute inline-flex h-full w-full rounded-full opacity-60', status === 'up' ? 'animate-ping bg-sage' : 'hidden')} /><span className={cn('relative inline-flex h-2 w-2 rounded-full', status === 'up' ? 'bg-sage' : status === 'down' ? 'bg-steel-400' : 'animate-pulse bg-steel-400')} /></span>{label}
+        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-neutral-200 pt-6 sm:flex-row sm:items-center">
+          <span role="status" className={cn('inline-flex items-center gap-2.5 rounded-md border px-3 py-1.5 font-mono text-[11.5px] font-medium', status === 'up' ? 'border-accent-line bg-accent-soft text-accent-deep' : 'border-neutral-300 bg-white text-neutral-700')}>
+            <span className="relative flex h-2 w-2"><span className={cn('absolute inline-flex h-full w-full rounded-full opacity-60', status === 'up' ? 'animate-ping bg-accent' : 'hidden')} /><span className={cn('relative inline-flex h-2 w-2 rounded-full', status === 'up' ? 'bg-accent' : status === 'down' ? 'bg-neutral-400' : 'animate-pulse bg-neutral-400')} /></span>{label}
           </span>
-          <span className="font-mono text-[11.5px] text-steel-400">© 2026 PATCHWORK · Built for the CRCE hackathon round</span>
+          <span className="font-mono text-[11.5px] text-neutral-600">v1.0.1 · © 2026 PATCHWORK · Built for the CRCE hackathon round</span>
         </div>
       </div>
     </footer>

@@ -19,7 +19,8 @@ for (let k = 0; k < 3; k++) {
 await page.waitForTimeout(900);
 const fixed = (await pos()).filter((n) => n.fixed > 0.9).length;
 ok(fixed === 3, 'hero: all 3 broken nodes can be hotfixed by pointing + clicking', `${fixed}/3`);
-ok((await page.locator('[role=status]').first().innerText()).toLowerCase().includes('all hotfixed'), 'hero: HUD reports "all hotfixed"');
+ok((await page.locator('[role=status]').first().innerText()).toLowerCase().includes('all hotfixed'), 'hero: status bar reports "all hotfixed"');
+ok((await page.getByText('200 OK').count()) >= 3, 'hero: callouts flip to "200 OK" on every patched node');
 await page.getByRole('button', { name: 'Reset the scene' }).click(); await page.waitForTimeout(800);
 ok((await pos()).every((n) => n.fixed < 0.2), 'hero: reset re-breaks the scene');
 
@@ -47,15 +48,15 @@ await page.getByRole('button', { name: 'Restore' }).click(); await page.waitForS
 await page.getByRole('button', { name: /1-click rollback/ }).click(); await page.waitForSelector('text=rolled back'); ok(true, 'step 3: one-click rollback');
 
 // playground
-await page.locator('#playground').scrollIntoViewIfNeeded(); await page.waitForTimeout(1200);
-const read = async () => Number((await page.locator('text=ERRORS SINCE DEPLOY').first().locator('xpath=following-sibling::div').first().innerText()).replace(/,/g, ''));
-const e1 = await read(); await page.waitForTimeout(900); const e2 = await read();
-ok(e2 > e1, 'playground: error counter rises while broken', `${e1} → ${e2}`);
-await page.getByRole('button', { name: 'Apply Patch' }).click(); await page.getByRole('button', { name: /Patch live · 0 redeploys/ }).waitFor({ timeout: 6000 });
-await page.waitForTimeout(600); const e3 = await read(); await page.waitForTimeout(900); const e4 = await read();
-ok(e4 === e3, 'playground: counter stops after the patch', `${e3} → ${e4}`);
-ok((await page.getByText('healthy').count()) > 0, 'playground: status flips to healthy');
-await page.getByRole('button', { name: 'Replay the demo' }).click(); await page.waitForTimeout(500); ok((await page.getByRole('button', { name: 'Apply Patch' }).count()) > 0, 'playground: replay resets');
+await page.locator('#playground').scrollIntoViewIfNeeded(); await page.waitForTimeout(1500);
+ok((await page.getByText('Checkout Failure').count()) > 0, 'playground: starts at "500 Checkout Failure"');
+const lat = async () => Number((await page.locator('text=p95 latency').first().locator('xpath=following-sibling::div').first().innerText()).replace(/[^0-9]/g, '').slice(0, 5));
+const l0 = await lat(); ok(l0 > 1200, 'playground: broken p95 latency is high', `${l0}ms`);
+await page.getByRole('button', { name: 'Simulate Fix' }).click();
+await page.getByText('OK • Patch Injected').waitFor({ timeout: 8000 }); ok(true, 'playground: flips to "200 OK • Patch Injected"');
+await page.waitForTimeout(2500); const l1 = await lat(); ok(l1 < 400, 'playground: latency settles low after the patch', `${l1}ms`);
+ok((await page.locator('text=PATCH LIVE').count()) > 0, 'playground: terminal logs the live patch');
+await page.getByRole('button', { name: 'Replay the demo' }).click(); await page.waitForTimeout(500); ok((await page.getByRole('button', { name: 'Simulate Fix' }).count()) > 0, 'playground: replay resets');
 
 // footer
 await page.locator('footer').scrollIntoViewIfNeeded();
