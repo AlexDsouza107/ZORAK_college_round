@@ -63,7 +63,6 @@ export default function Overview() {
         <div className="strip">
           <div style={{ minWidth: 0 }}>
             <div className="strip-title">Welcome back, {user.name.split(' ')[0]}</div>
-            <div className="strip-sub">Patches are small, reversible changes layered over {data.site.name}: reviewed, verified in a real browser, released as a versioned set, and rolled back in one click.</div>
           </div>
           <span className="spacer" />
           <div className="row wrap" style={{ justifyContent: 'flex-end' }}>

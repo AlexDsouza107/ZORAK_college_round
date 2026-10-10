@@ -334,3 +334,11 @@ table.tbl { width: 100%; border-collapse: collapse; }
 .kpi-label { font-size: 12px; letter-spacing: .07em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kpi-value { font-size: 32px; margin: 2px 0 1px; line-height: 1.05; }
 .kpi-sub { font-size: 13.5px; }
+
+/* ===== Welcome strip: bigger heading and buttons, no subtext ===== */
+.dash .strip { padding: 30px 34px; gap: 28px; }
+.dash .strip-title { font-size: clamp(30px, 2.7vw, 40px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; white-space: nowrap; }
+.dash .strip > .row { flex-wrap: nowrap; gap: 14px; }
+.dash .strip .btn { font-size: 17px; font-weight: 600; padding: 15px 28px; border-radius: 14px; gap: 10px; }
+.dash .strip .btn svg { width: 20px; height: 20px; }
+@media (max-width: 1200px) { .dash .strip .btn { font-size: 16px; padding: 13px 22px; } }

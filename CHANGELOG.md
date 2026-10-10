@@ -4,7 +4,7 @@
 
 ### Studio
 - **Overview redesigned as a full-width dashboard.** The page now uses the whole window (up to 2,200px) instead of a centred ~1,380px column.
-  - Slim welcome strip replaces the tall banner.
+  - Slim welcome strip replaces the tall banner: large 40px heading and large action buttons, no subtext.
   - Compact, centred KPI tiles in one row (2×2 below 1,200px), with shorter labels.
   - **Patch pipeline** has its own full-width row with larger stage tiles.
   - Two roomy columns: Production health (2×2 metrics) + Element tracking, then Review queue + Demo controls.
