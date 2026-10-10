@@ -15,11 +15,12 @@ export function record(siteId, actor, type, summary, payload = {}) {
   emit('audit', { siteId, seq: Number(r.lastInsertRowid), auditType: type });
   return hash;
 }
-export function list(siteId, { type, actor, limit = 300 } = {}) {
+export function list(siteId, { type, actor, exclude, limit = 300 } = {}) {
   let sql = 'SELECT * FROM audit WHERE 1=1'; const p = [];
   if (siteId) { sql += ' AND site_id = ?'; p.push(siteId); }
   if (type) { sql += ' AND type LIKE ?'; p.push(type + '%'); }
   if (actor) { sql += ' AND actor = ?'; p.push(actor); }
+  if (exclude) { sql += ' AND type NOT LIKE ?'; p.push(exclude + '%'); }
   sql += ' ORDER BY seq DESC LIMIT ?'; p.push(limit);
   return all(sql, ...p);
 }

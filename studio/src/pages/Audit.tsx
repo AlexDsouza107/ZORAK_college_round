@@ -2,16 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { api, dateTime } from '../api';
 import { useApp } from '../ctx';
 import { Avatar, Btn, Card, Empty, I, Page, Seg, useAsync, Who } from '../ui';
+import { AuditIcon } from '../auditMeta';
 
 const CATS: Record<string, { label: string; match: string[] }> = {
   all: { label: 'Everything', match: [] }, patch: { label: 'Patches', match: ['patch.', 'conflict.'] }, release: { label: 'Releases', match: ['release.'] },
   verify: { label: 'Verification', match: ['verify.'] }, health: { label: 'Health & tracking', match: ['health.', 'drift.'] }, site: { label: 'Site', match: ['site.'] }
 };
-const ICON: Record<string, any> = { 'patch.created': I.FilePlus2, 'patch.updated': I.Pencil, 'patch.submitted': I.Send, 'patch.approved': I.CircleCheck, 'patch.rejected': I.CircleX, 'patch.reanchored': I.Crosshair, 'patch.deleted': I.Trash2, 'patch.withdrawn': I.Undo2,
-  'release.created': I.Package, 'release.deployed': I.Rocket, 'release.canary': I.Bird, 'release.promoted': I.TrendingUp, 'release.rollback': I.Undo2, 'release.auto_rollback': I.ShieldAlert, 'verify.started': I.Play, 'verify.finished': I.ShieldCheck, 'drift.checked': I.Radar, 'drift.heal_blocked': I.ShieldX,
-  'site.redeployed': I.Globe, 'site.created': I.Globe, 'site.config': I.Settings, 'conflict.resolved': I.GitMerge, 'health.smoke_pass': I.HeartPulse, 'health.smoke_fail': I.HeartCrack };
-const TONE = (t: string) => (/rollback|fail|rejected|blocked|deleted/.test(t) ? 'bad' : /approved|deployed|pass|promoted|finished/.test(t) ? 'good' : /canary|redeployed|drift/.test(t) ? 'warn' : '');
-
 export default function Audit() {
   const { siteId, can, subscribe, users } = useApp();
   const { busy, run } = useAsync();
@@ -52,10 +48,10 @@ export default function Audit() {
         </div>
 
         {list.length === 0 ? <Card><Empty icon={I.ScrollText} title="No matching entries" /></Card> : days.map(([day, items]) => <div key={day}><div className="eyebrow" style={{ margin: '4px 4px 10px' }}>{day === new Date().toDateString() ? 'Today' : day}</div>
-          <Card pad={false}>{items.map((r) => { const Ic = ICON[r.type] || I.Dot; const tone = TONE(r.type);
+          <Card pad={false}>{items.map((r) => {
             return <div key={r.seq} style={{ borderBottom: '1px solid var(--line)' }}>
               <div className="row" style={{ padding: '12px 18px', alignItems: 'flex-start', cursor: 'pointer' }} onClick={() => setOpen(open === r.seq ? null : r.seq)}>
-                <div style={{ width: 32, height: 32, borderRadius: 10, flexShrink: 0, display: 'grid', placeItems: 'center', background: tone === 'bad' ? 'var(--bad-soft)' : tone === 'good' ? 'var(--good-soft)' : tone === 'warn' ? 'var(--warn-soft)' : 'var(--surface-3)', color: tone === 'bad' ? 'var(--bad)' : tone === 'good' ? 'var(--good)' : tone === 'warn' ? 'var(--warn)' : 'var(--ink-2)' }}><Ic size={16} /></div>
+                <AuditIcon type={r.type} size={32} />
                 <div style={{ flex: 1, minWidth: 0 }}><div className="small" style={{ lineHeight: 1.4 }}>{r.summary}</div><div className="row gap-sm tiny muted" style={{ marginTop: 3 }}><Who id={r.actor} /><span>· {dateTime(r.ts)}</span><span className="mono">· #{r.seq}</span></div></div>
                 <span className="badge outline mono">{r.hash.slice(0, 8)}</span></div>
               {open === r.seq && <div style={{ padding: '0 18px 16px 64px' }}><div className="grid g2"><div><div className="eyebrow" style={{ marginBottom: 4 }}>Event</div><div className="mono small">{r.type}</div><div className="eyebrow" style={{ margin: '10px 0 4px' }}>Seal</div><div className="mono tiny muted" style={{ wordBreak: 'break-all' }}>hash {r.hash}<br />prev {r.prevHash}</div></div>

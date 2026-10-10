@@ -3,13 +3,19 @@
 ## v1.0.2 — Overview dashboard + name fix
 
 ### Studio
-- **Overview is now a full-width dashboard.** The page uses the whole window (up to 2,200px) instead of a centred ~1,380px column; at 2,000px wide it fits on one screen.
-- Replaced the tall welcome banner with a slim strip; stat tiles now carry an icon, a larger value and a clearer subtitle, and are clickable.
-- Three aligned columns: pipeline / production health / demo controls · element tracking / review queue · recent activity (14 items).
+- **Overview redesigned as a full-width dashboard.** The page now uses the whole window (up to 2,200px) instead of a centred ~1,380px column.
+  - Slim welcome strip replaces the tall banner.
+  - Compact, centred KPI tiles in one row (2×2 below 1,200px), with shorter labels.
+  - **Patch pipeline** has its own full-width row with larger stage tiles.
+  - Two roomy columns: Production health (2×2 metrics) + Element tracking, then Review queue + Demo controls.
+  - **Recent activity** moved to the bottom at full width and shows the last 5 events.
+  - Generous spacing and larger text; card headers wrap their buttons instead of squeezing titles; better dark-theme contrast for secondary text.
 - New **Review queue** card (in review, approved and drafts) and a per-patch list under **Element tracking**.
-- Health metrics reflow into a 2×2 grid when the card is narrow.
-- Better dark-theme contrast for secondary text.
-- **Patches page:** removed the subtitle under the heading, and made the page title larger and bolder (36px, full contrast).
+- **Recent activity** now uses the same icons and colour coding as the Audit trail, from one shared definition (`studio/src/auditMeta.tsx`).
+- **Patches page:** removed the subtitle under the heading and made the page title larger and bolder (36px).
+
+### Server
+- `GET /api/audit` accepts an optional `exclude` prefix filter (e.g. `exclude=drift.`), so the dashboard feed is never flooded by automatic drift checks.
 
 ### Housekeeping
 - The demo admin user is now named **Alex Dsouza** in the app, the seeded audit trail and the manual.

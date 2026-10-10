@@ -137,7 +137,7 @@ export default async function routes(app) {
   app.post('/api/demo/reset', async (req) => { requireRole(userFrom(req), 'admin'); await seedDemo({ reset: true }); return { ok: true }; });
 
   /* ---------------------------------------------------------------- audit */
-  app.get('/api/audit', async (req) => audit.list(req.query.siteId, { type: req.query.type, actor: req.query.actor, limit: Number(req.query.limit) || 300 })
+  app.get('/api/audit', async (req) => audit.list(req.query.siteId, { type: req.query.type, actor: req.query.actor, exclude: req.query.exclude, limit: Number(req.query.limit) || 300 })
     .map((a) => ({ seq: a.seq, siteId: a.site_id, actor: a.actor, type: a.type, summary: a.summary, payload: a.payload, ts: a.ts, hash: a.hash, prevHash: a.prev_hash })));
   app.get('/api/audit/verify', async () => audit.verifyChain());
   app.post('/api/audit/tamper', async () => ({ seq: audit.tamperDemo() }));

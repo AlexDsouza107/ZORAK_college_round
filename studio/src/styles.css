@@ -250,11 +250,6 @@ table.tbl { width: 100%; border-collapse: collapse; }
 .kpi-value.good { color: var(--good); } .kpi-value.bad { color: var(--bad); } .kpi-value.warn { color: var(--warn); }
 .kpi-sub { font-size: 13px; color: var(--ink-2); }
 
-.dash-main { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
-.dash-col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-.dash-col > .card:last-child { flex: 1; }
-@media (max-width: 1500px) { .dash-main { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dash-col.col-c { grid-column: 1 / -1; } }
-@media (max-width: 1000px) { .dash-main { grid-template-columns: minmax(0, 1fr); } .dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 .pipe { display: flex; align-items: stretch; gap: 4px; }
 .pipe-wrap { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; }
@@ -287,3 +282,55 @@ table.tbl { width: 100%; border-collapse: collapse; }
 /* larger, higher-contrast page title (used on Patches) */
 .topbar.big { padding-top: 18px; padding-bottom: 18px; }
 .topbar.big h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; color: var(--ink); }
+
+/* ===== Overview v2: roomy 2-column grid, pipeline full width, activity at the bottom ===== */
+.content:has(.page.wide) { padding: 26px 34px 56px; }
+.dash { gap: 22px; font-size: 15px; }
+.dash .small { font-size: 14px; } .dash .tiny { font-size: 13px; } .dash .muted { font-size: 14.5px; }
+.dash .card-head { padding: 20px 24px 0; flex-wrap: wrap; row-gap: 10px; }
+.dash .card-head h3 { font-size: 20px; white-space: nowrap; }
+.dash .card-head .small { font-size: 14px; }
+.dash .card-body { padding: 16px 24px 24px; }
+.dash .btn { font-size: 14px; padding: 8px 16px; } .dash .btn.sm { font-size: 13.5px; padding: 6px 13px; }
+
+.strip { padding: 20px 26px; }
+.strip-title { font-size: 26px; } .strip-sub { font-size: 15px; margin-top: 5px; }
+
+.dash-kpis { gap: 22px; }
+.kpi { padding: 20px 24px; gap: 18px; }
+.kpi-ico { width: 52px; height: 52px; border-radius: 14px; }
+.kpi-label { font-size: 12.5px; } .kpi-value { font-size: 38px; margin: 4px 0 3px; } .kpi-sub { font-size: 14px; }
+
+.dash-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; align-items: stretch; }
+.dash-grid > .span2 { grid-column: 1 / -1; }
+@media (max-width: 1000px) { .dash-grid { grid-template-columns: minmax(0, 1fr); } .dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.pipe { gap: 8px; }
+.pipe-stage { padding: 20px 24px; border-radius: 14px; }
+.pipe-top { font-size: 15px; gap: 8px; } .pipe-n { font-size: 46px; margin: 8px 0 14px; } .pipe-bar { height: 6px; }
+
+.metrics { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+.metric { padding: 16px 18px; border-radius: 14px; }
+.metric-v { font-size: 30px; margin: 6px 0 4px; gap: 10px; } .metric-s { font-size: 14px; }
+.note { margin-top: 16px; padding: 12px 14px; font-size: 14px; gap: 10px; align-items: center; }
+
+.chips { gap: 10px; } .chip { font-size: 15px; padding: 5px 8px 5px 5px; }
+.track-list { margin-top: 16px; } .track-row { padding: 13px 16px; font-size: 15px; gap: 14px; }
+
+.activity { padding: 6px 24px 14px; }
+.act-row { padding: 14px 0; gap: 16px; align-items: center; }
+.act-ico { width: 34px; height: 34px; border-radius: 10px; }
+.act-text { flex: 1; min-width: 0; font-size: 15px; line-height: 1.45; }
+.act-time { font-size: 13.5px; }
+.kpi-value { white-space: nowrap; }
+.metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* ===== KPI tiles: compact, one row, content centred ===== */
+.dash-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 1200px) { .dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { padding: 16px 14px; gap: 14px; justify-content: center; text-align: left; min-height: 92px; }
+.kpi > div:last-child { min-width: 0; }
+.kpi-ico { width: 46px; height: 46px; border-radius: 13px; }
+.kpi-label { font-size: 12px; letter-spacing: .07em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi-value { font-size: 32px; margin: 2px 0 1px; line-height: 1.05; }
+.kpi-sub { font-size: 13.5px; }
