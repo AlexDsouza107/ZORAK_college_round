@@ -36,7 +36,7 @@ const cover = [
   L.spacer(2600),
   new Paragraph({ children: [new TextRun({ text: 'PATCHWORK', font: SERIF, size: 96, bold: true, color: INK })], spacing: { after: 60 } }),
   new Paragraph({ children: [new TextRun({ text: 'Feature & Demo Guide', font: SERIF, size: 52, italics: true, color: ACCENT })], spacing: { after: 360 }, border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: ACCENT, space: 14 } } }),
-  new Paragraph({ children: [new TextRun({ text: 'Everything you need to understand every feature — and to show it with confidence.', font: SANS, size: 26, color: MUTED })], spacing: { before: 300, after: 1200 } }),
+  new Paragraph({ children: [new TextRun({ text: 'Everything you need to understand every feature — and to show it with confidence.  (PATCHWORK prototype v1.0.3 · 11 October 2026)', font: SANS, size: 26, color: MUTED })], spacing: { before: 300, after: 1200 } }),
   table(['Inside', ''], [
     ['1', 'The 30-second pitch and the numbers to remember'], ['2', 'Every feature in plain English, with what to click and what to say'],
     ['3', 'Setting up before you go on stage (one command)'], ['4', 'The main demo script — 10 scenes, about 8 minutes'],
@@ -54,8 +54,8 @@ add(L.P('“Imagine your checkout button breaks after a deployment and the origi
 add(L.H2('Numbers worth remembering'));
 add(table(['Number', 'What it means', 'Where you will see it'], [
   ['**0**', 'lines of the original site’s code changed or redeployed', 'Whole demo — the store on :4100 stays broken the entire time'],
-  ['**84 %**', 'confidence with which patches re-attached after the site was redesigned (new ids, classes, structure)', 'Scene 7, Element tracking'],
-  ['**17+**', 'automated checks in one verification run (patch apply, flows, console, accessibility, visual, blast radius — desktop and mobile)', 'Scene 5, Verification'],
+  ['**84 %**', 'locator confidence in the ShopLite demo, when the checkout button re-attached after the v2 redesign (new ids, classes, structure) — a figure from this one scenario, not a benchmark', 'Scene 7, Element tracking'],
+  ['**7 types**', 'of automated check in each verification run (patch apply, critical flows, console, network, accessibility, visual, blast radius — desktop and mobile; the count of individual checks grows with pages and patches)', 'Scene 5, Verification'],
   ['**~8 s**', 'a full verification run in two real browsers', 'Scene 5'],
   ['**6 / 6**', 'requirements in the problem statement covered, plus six extras', 'Pitch close'],
   ['**SHA-256**', 'every action sealed in a hash chain — edits to history are detected', 'Scene 9, Audit trail']
@@ -170,7 +170,7 @@ add(card('2.12 Chrome extension', [
   ['Underneath', 'A background worker talks to the PATCHWORK API; a content script injects the shared locator and runtime. Unregistered sites are untouched.']
 ]));
 add(card('2.13 Health dashboard', [
-  ['What it is', 'The Overview page: live release, patch counts, errors and self-heals in the last minute, tracking status, recent activity.'],
+  ['What it is', 'The Overview page: a welcome strip with three big buttons beside the patch pipeline, live release, patch counts, errors and self-heals in the last minute, tracking status, and the last five recent-activity events at the bottom.'],
   ['Show it', 'Open it first and last; use **Simulate traffic** to make the numbers move.'],
   ['Say it', '“Everything an on-call person needs on one screen.”']
 ]));
@@ -348,7 +348,7 @@ const doc = new Document({
     {
       properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1300, bottom: 1200, left: 1134, right: 1134 } } },
       headers: { default: new Header({ children: [new Paragraph({ children: [new TextRun({ text: 'PATCHWORK', font: SERIF, bold: true, size: 18, color: ACCENT }), new TextRun({ text: '   Feature & Demo Guide', font: SANS, size: 18, color: MUTED })], border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: LINE, space: 6 } } })] }) },
-      footers: { default: new Footer({ children: [new Paragraph({ tabStops: [{ type: TabStopType.RIGHT, position: W }], children: [new TextRun({ text: 'Hotfix the Internet', font: SANS, size: 17, color: MUTED }), new TextRun({ text: '\tPage ', font: SANS, size: 17, color: MUTED }), new TextRun({ children: [PageNumber.CURRENT], font: SANS, size: 17, color: MUTED })] })] }) },
+      footers: { default: new Footer({ children: [new Paragraph({ tabStops: [{ type: TabStopType.RIGHT, position: W }], children: [new TextRun({ text: 'Hotfix the Internet · v1.0.3', font: SANS, size: 17, color: MUTED }), new TextRun({ text: '\tPage ', font: SANS, size: 17, color: MUTED }), new TextRun({ children: [PageNumber.CURRENT], font: SANS, size: 17, color: MUTED })] })] }) },
       children: [
         new Paragraph({ children: [new TextRun({ text: 'Contents', font: SERIF, size: 44, bold: true })], spacing: { after: 240 }, border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT, space: 8 } } }),
         new TableOfContents('Contents', { hyperlink: true, headingStyleRange: '1-2' }),

@@ -12,7 +12,7 @@ const cover = [
   new Paragraph({ children: [new TextRun({ text: 'Hotfix the Internet', font: SERIF, size: 44, italics: true, color: ACCENT })], spacing: { after: 360 }, border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: ACCENT, space: 14 } } }),
   new Paragraph({ children: [new TextRun({ text: 'Feature & Instruction Manual', font: SANS, size: 36, color: INK })], spacing: { before: 300, after: 120 } }),
   new Paragraph({ children: [new TextRun({ text: 'Patch live websites without rebuilding them — visually, collaboratively and safely.', font: SANS, size: 24, color: MUTED })], spacing: { after: 1600 } }),
-  table(['Document', 'Details'], [['Product', 'PATCHWORK prototype v1.0'], ['Problem statement', '#3 — PATCHWORK: Hotfix the Internet (CRCE round)'], ['Edition', '10 October 2026'], ['Audience', 'Team members, mentors and judges who need to understand, run and demo the prototype']], [2400, 7238], { boldFirst: true })
+  table(['Document', 'Details'], [['Product', 'PATCHWORK prototype v1.0.3'], ['Problem statement', '#3 — PATCHWORK: Hotfix the Internet (CRCE round)'], ['Edition', '11 October 2026 (v1.0.3)'], ['Audience', 'Team members, mentors and judges who need to understand, run and demo the prototype']], [2400, 7238], { boldFirst: true })
 ];
 
 /* ---------------------------------------------------------------- content */
@@ -105,8 +105,9 @@ add(...bullets([
   '**AI indicator** — shows whether Claude is connected or the rule-based fallback is active.'
 ]));
 add(H2('4.2 Overview'));
-add(P('The control room. A welcome banner with quick actions; four stat tiles (live patches, awaiting review, current release, production health); the **patch pipeline** (draft → in review → approved → live); **production health** (patch errors and self-heals in the last minute, with **Simulate traffic** and **Roll back**); an **element tracking** summary with **Run drift check**; recent activity from the audit trail; and **Demo controls**.'));
+add(P('The control room, laid out top to bottom: a **welcome strip** (“Welcome back, <name>”) with three large buttons — **Create a patch**, **Review** (shows the number waiting) and **Releases** — beside the **patch pipeline** (draft → in review → approved → live); four **stat tiles** (live patches, awaiting review, current release, production health); **production health** (patch errors and self-heals in the last minute, with **Simulate traffic** and **Roll back**); an **element tracking** summary with **Run drift check**; the **review queue**; **Demo controls**; and, at the bottom, **Recent activity** — the last five audit-trail events, grouped and shown with the same icons as the Audit trail page.'));
 add(callout('Demo controls', ['**Site v1 (original)** / **Redeploy as v2** pretend that the site’s vendor ships a redesign you do not control (ids, classes and structure all change, but the bugs remain). **Reset demo data** wipes everything and re-seeds ShopLite.']));
+add(P('The **Patches**, **Verification** and **Releases** pages use a large page title with no subtitle, so the working area starts higher on screen. Patch cards are larger for readability.'));
 add(H2('4.3 Visual editor'));
 add(P('Three panes: **Patches** (layers) on the left, the **canvas** in the middle, the **Inspector** on the right, with an **AI bar** underneath the canvas.'));
 add(H3('Creating a patch'));
@@ -287,6 +288,8 @@ add(table(['Path', 'Contents'], [
   ['`shared/core.cjs`', 'Fingerprinting, scoring, locator, conflict detection (UMD: used in browser and Node).'],
   ['`runtime/`', '`runtime.js` (patch applier) and `editor.js` (visual-editor overlay).'],
   ['`studio/src/`', '`pages/*` (Overview, Editor, Patches, Verify, Releases, Tracking, Audit, Settings), `ctx.tsx`, `api.ts`, `ui.tsx`, `styles.css`.'],
+  ['`landing/`', 'Marketing landing page (React, Tailwind, three.js): `npm run landing` for development on port 5174, `npm run landing:build` to build. See section 14.'],
+  ['`CHANGELOG.md`', 'Release notes for v1.0.0 – v1.0.3.'],
   ['`demo-site/`', 'ShopLite storefront with v1/v2 templates and an admin endpoint to switch versions.'],
   ['`extension/`', 'Chrome MV3 extension (background, content, panel, popup).'],
   ['`scripts/`', '`start.mjs`, test suites, screenshot and build helpers.'],
@@ -432,6 +435,26 @@ add(table(['Term', 'Definition'], [
   ['Smoke test', 'A quick check of critical flows right after deployment.']
 ], [2600, 7038], { boldFirst: true }));
 
+/* 14 --------------------------------------------------------------------- */
+add(H1('14. Landing page and version history'));
+add(H2('14.1 The landing page (v1.0.3)'));
+add(P('A separate, public-facing page that introduces the product. Run it with `npm run landing` (http://localhost:5174). It is independent of Studio and the server; its **Open Studio** buttons point at Studio on port 4000.'));
+add(...bullets([
+  '**Dark premium theme** — near-black canvas, emerald accent, Geist and Geist Mono type.',
+  '**Patch-themed background** — a full-page field of drifting bubbles and stitched patch squares; red × marks flip to emerald ✓ as you scroll past. The bubbles react to the cursor (they move away) and pop with a spark when clicked. It pauses when the tab is hidden and shows a still frame if the visitor prefers reduced motion.',
+  '**Scrolling** — smooth (Lenis) scrolling, a progress bar along the top, parallax in the hero, scroll-linked line and number highlights in “How it works”, and a spotlight that follows the cursor on cards.',
+  '**Header** — a taller bar with a larger logo and the Patchwork brand name; nav links for How it works, Playground and Features; GitHub and **Open Studio** buttons.',
+  '**Sections** — hero with an interactive 3D component tree, a four-card strip (0 full-site redeploys · multi-signal self-heal locator · 7 check types · SHA-256 audit chain), How it works, a live Playground, a feature grid and the footer (shows v1.0.3).'
+]));
+add(P('The 22-check interaction and mobile test for the page is `npm run test:landing` (start `vite preview` first and pass its address in `LANDING_URL`).'));
+add(H2('14.2 Version history'));
+add(table(['Version', 'What changed'], [
+  ['**v1.0.3**', 'Landing page: dark premium theme, patch-themed animated background, scroll effects, larger header and logo; stats strip reworded to claims that can be verified in the code.'],
+  ['**v1.0.2**', 'Studio: redesigned Overview (welcome strip, pipeline card, larger elements, activity moved to the bottom showing the last five events with audit-style icons); Patches, Verification and Releases headers enlarged and subtitles removed; name corrected to “Alex Dsouza”.'],
+  ['**v1.0.1**', 'Landing page refresh (warm light theme, browser-framed 3D hero, unified feature grid, shorter playground).'],
+  ['**v1.0.0**', 'Initial prototype: all six requirements plus extras.']
+], [1500, 8138]));
+
 /* --------------------------------------------------------------- assemble */
 const doc = new Document({
   features: { updateFields: true }, creator: 'PATCHWORK team', title: 'PATCHWORK — Feature & Instruction Manual', description: 'Manual for the PATCHWORK hackathon prototype',
@@ -452,7 +475,7 @@ const doc = new Document({
     {
       properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1300, bottom: 1200, left: 1134, right: 1134 } } },
       headers: { default: new Header({ children: [new Paragraph({ children: [new TextRun({ text: 'PATCHWORK', font: SERIF, bold: true, size: 18, color: ACCENT }), new TextRun({ text: '   Feature & Instruction Manual', font: SANS, size: 18, color: MUTED })], border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: LINE, space: 6 } } })] }) },
-      footers: { default: new Footer({ children: [new Paragraph({ tabStops: [{ type: TabStopType.RIGHT, position: W }], children: [new TextRun({ text: 'Hotfix the Internet', font: SANS, size: 17, color: MUTED }), new TextRun({ text: '\tPage ', font: SANS, size: 17, color: MUTED }), new TextRun({ children: [PageNumber.CURRENT], font: SANS, size: 17, color: MUTED })] })] }) },
+      footers: { default: new Footer({ children: [new Paragraph({ tabStops: [{ type: TabStopType.RIGHT, position: W }], children: [new TextRun({ text: 'Hotfix the Internet · v1.0.3', font: SANS, size: 17, color: MUTED }), new TextRun({ text: '\tPage ', font: SANS, size: 17, color: MUTED }), new TextRun({ children: [PageNumber.CURRENT], font: SANS, size: 17, color: MUTED })] })] }) },
       children: [
         new Paragraph({ children: [new TextRun({ text: 'Contents', font: SERIF, size: 44, bold: true })], spacing: { after: 240 }, border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT, space: 8 } } }),
         new TableOfContents('Contents', { hyperlink: true, headingStyleRange: '1-2' }),
