@@ -9,6 +9,7 @@ import { USERS, userFrom, requireRole } from './users.js';
 import { sseHandler, touchPresence, listPresence, emit } from './bus.js';
 import { createPreview, urlFor, PORT } from './proxy.js';
 import { startVerification, getVerification, setHash } from './verify.js';
+import { proposeFix } from './autofix.js';
 import { all, get } from './db.js';
 import { HttpError } from './util.js';
 import { seedDemo } from './seed.js';
@@ -101,6 +102,10 @@ export default async function routes(app) {
     const site = store.mustSite(req.params.id);
     if (!req.body.patchIds?.length) throw new HttpError(400, 'Choose patches to verify.');
     return { id: startVerification(site, req.body.patchIds, userFrom(req)) };
+  });
+  app.post('/api/verifications/:id/fix', async (req) => {
+    const v = getVerification(Number(req.params.id)); if (!v) throw new HttpError(404, 'Not found');
+    return proposeFix(v.siteId, v.id);
   });
   app.get('/api/verifications/:id', async (req) => { const v = getVerification(Number(req.params.id)); if (!v) throw new HttpError(404, 'Not found'); return v; });
   app.get('/api/sites/:id/verifications', async (req) => all('SELECT id FROM verifications WHERE site_id = ? ORDER BY id DESC LIMIT 20', req.params.id).map((r) => { const v = getVerification(r.id); return { ...v, report: { summary: v.report.summary, stage: v.report.stage, progress: v.report.progress } }; }));

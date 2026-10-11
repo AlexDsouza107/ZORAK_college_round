@@ -118,3 +118,17 @@ export async function suggestResolution({ conflict, patchA, patchB }) {
     return { strategy: keepA ? 'keepA' : 'keepB', customValue: null, provider: 'mock', reasoning: `Rule-based pick: "${(keepA ? patchA : patchB).title}" is further along in review (${(keepA ? patchA : patchB).status}).` };
   }
 }
+
+const FIX_SCHEMA = { type: 'object', additionalProperties: false, properties: { text: { type: 'string' } }, required: ['text'] };
+
+// Plain-English explanation of an automatic verification fix. The actions are already decided; this only describes them.
+export async function explainFix({ failures, actions, notes, changed }) {
+  const rule = () => {
+    if (!changed) return `No automatic fix was found. ${notes.join(' ') || 'The remaining failures need a developer to look at them.'}`;
+    const parts = actions.map((a) => `${a.type === 'add' ? 'Added back' : 'Removed'} "${a.title}" — ${a.reason}`);
+    return `${parts.join(' ')} Verification will now re-run on the corrected set.${notes.length ? ' ' + notes.join(' ') : ''}`;
+  };
+  const system = 'You explain, in two or three plain sentences for a developer, why a website patch verification failed and what the automatic fix changed. Do not invent causes beyond the data given.';
+  try { return { text: (await callJson(system, JSON.stringify({ failures, actions, notes }), FIX_SCHEMA)).text, provider: 'claude' }; }
+  catch { return { text: rule(), provider: 'rules' }; }
+}

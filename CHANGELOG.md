@@ -21,6 +21,10 @@ A visual redesign of the landing page (`landing/`). **No text content was change
 ### Performance
 - Frosted-glass blur over the animated background dropped a software-rendered test browser to ~22 fps; replaced with solid layered panels. All effects now run at 60 fps in the same test.
 
+### Verification
+- **Fix with AI.** When a verification fails or warns, a card offers **Fix with AI and re-verify**. The server diagnoses the failure and corrects the patch set: it adds back live patches that the candidate dropped, and removes patches that cannot apply, hide or remove too much of the page while a critical flow fails, or inject a throwing script. It then re-runs verification and, on a pass, opens Releases with the set preselected. Claude (when connected) writes the plain-English explanation; the corrections themselves are deterministic rules. New endpoint `POST /api/verifications/:id/fix`, new `server/src/autofix.js`, new test `npm run test:autofix`.
+- **Bug fix: verification and release no longer silently drop live patches.** Arriving with a selected patch used to leave the live patches unticked, so the candidate lost the live checkout fix and the checkout flow failed. Live patches now stay selected, and a "Keeps live patches" warning names any that a set omits.
+
 ### Housekeeping
 - New dependency: `lenis`. All workspace packages bumped to 1.0.3.
 

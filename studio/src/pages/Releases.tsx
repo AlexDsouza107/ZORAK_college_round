@@ -27,7 +27,7 @@ export default function Releases() {
     if (init.current || !patches.length) return; init.current = true;
     let pre: string[] = []; try { pre = JSON.parse(sessionStorage.getItem('pw.selection') || '[]'); } catch { /* ignore */ }
     sessionStorage.removeItem('pw.selection');
-    setSel(new Set(pre.length ? pre : patches.filter((p) => p.status === 'live' || p.status === 'approved').map((p) => p.id)));
+    setSel(new Set(pre.length ? [...pre, ...patches.filter((p) => p.status === 'live').map((p) => p.id)] : patches.filter((p) => p.status === 'live' || p.status === 'approved').map((p) => p.id)));
   }, [patches]);
 
   const ids = useMemo(() => [...sel].sort(), [sel]);

@@ -25,7 +25,8 @@
     "test:demo": "npm run demo:prep && node scripts/test-demo-ui.mjs",
     "landing": "npm run dev -w landing",
     "landing:build": "npm run build -w landing",
-    "test:landing": "node scripts/test-landing.mjs"
+    "test:landing": "node scripts/test-landing.mjs",
+    "test:autofix": "node scripts/test-autofix.mjs"
   },
   "devDependencies": {
     "docx": "^9.9.0"

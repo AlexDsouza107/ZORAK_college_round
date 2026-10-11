@@ -70,6 +70,10 @@ async function execute(site, id, patches, user) {
     const baseSrc = active ? { kind: 'release', version: active.version } : { kind: 'none' };
     const token = createPreview(site.id, patches.map((p) => p.id));
     const candSrc = { kind: 'preview', token };
+    // A release replaces the live set, so a candidate that omits live patches silently drops their fixes.
+    const droppedP = active ? active.patchIds.filter((pid) => !patches.some((p) => p.id === pid)).map((pid) => ({ id: pid, title: store.getPatch(pid)?.title || pid })) : [];
+    const dropped = droppedP.map((d) => d.title);
+    if (dropped.length) add({ id: 'drops-live', name: 'Keeps live patches', status: 'warn', detail: `This set omits ${dropped.length} patch(es) currently live in v${active.version}: ${dropped.join(', ')}. Their fixes would be removed — tick them to keep them.` });
     const baseLabel = active ? `Live release v${active.version}` : 'Original site (no patches)';
 
     const concrete = patches.map((p) => p.page).filter((p) => p && !p.includes('*'));
@@ -157,14 +161,14 @@ async function execute(site, id, patches, user) {
       flowReports.push({ id: flow.id, name: flow.name, baseline: fb, candidate: fc });
       if (fc.ok) add({ id: `flow:${flow.id}`, name: `Critical flow: ${flow.name}`, status: 'pass', detail: fb.ok ? `All ${fc.steps.length} steps pass.` : `Fixed — failed at "${fb.failedStep}" on the baseline, passes with these patches.`, fixed: !fb.ok });
       else if (!fb.ok) add({ id: `flow:${flow.id}`, name: `Critical flow: ${flow.name}`, status: 'warn', detail: `Still failing at "${fc.failedStep}" (already failing on the baseline).` });
-      else add({ id: `flow:${flow.id}`, name: `Critical flow: ${flow.name}`, status: 'fail', detail: `Regression — passed on the baseline but now fails at "${fc.failedStep}": ${fc.error}` });
+      else add({ id: `flow:${flow.id}`, name: `Critical flow: ${flow.name}`, status: 'fail', detail: `Regression — passed on the baseline but now fails at "${fc.failedStep}": ${fc.error}${dropped.length ? ' (likely because this set drops live patch(es): ' + dropped.join(', ') + ')' : ''}` });
     }
 
     const summary = { pass: 0, warn: 0, fail: 0 };
     checks.forEach((c) => summary[c.status]++);
     const status = summary.fail ? 'fail' : summary.warn ? 'warn' : 'pass';
     const report = {
-      stage: 'done', progress: 100, baseline: baseLabel, baselineSource: baseSrc, pages, viewports: vpNames, checks, summary, artifacts,
+      stage: 'done', progress: 100, baseline: baseLabel, baselineSource: baseSrc, pages, viewports: vpNames, checks, summary, artifacts, droppedIds: droppedP.map((d) => d.id),
       flows: flowReports, a11y: a11yAll, durationMs: Date.now() - t0,
       patches: patches.map((p) => ({ id: p.id, title: p.title, state: patchResults[p.id] ? { status: patchResults[p.id].status, confidence: patchResults[p.id].confidence, matchedOn: patchResults[p.id].matchedOn } : null }))
     };

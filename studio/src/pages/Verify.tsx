@@ -13,19 +13,20 @@ const GROUPS: { id: string; label: string; icon: any; match: (id: string) => boo
 ];
 
 export default function Verify() {
-  const { patches, data, siteId, go, subscribe, user } = useApp();
+  const { patches, data, siteId, go, subscribe, user, toast } = useApp();
   const { busy, run } = useAsync();
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [runs, setRuns] = useState<any[]>([]);
   const [current, setCurrent] = useState<any>(null);
   const [prog, setProg] = useState<{ stage: string; progress: number } | null>(null);
   const init = useRef(false);
+  const autoGo = useRef(false);
 
   const eligible = patches.filter((p) => !['rejected'].includes(p.status));
   useEffect(() => {
     if (init.current || !patches.length) return; init.current = true;
     let pre: string[] = []; try { pre = JSON.parse(sessionStorage.getItem('pw.selection') || '[]'); } catch { /* ignore */ }
-    if (pre.length) { setSel(new Set(pre)); sessionStorage.removeItem('pw.selection'); }
+    if (pre.length) { setSel(new Set([...pre, ...patches.filter((p) => p.status === 'live').map((p) => p.id)])); sessionStorage.removeItem('pw.selection'); }
     else setSel(new Set(patches.filter((p) => p.status === 'live' || p.status === 'approved').map((p) => p.id)));
   }, [patches]);
 
@@ -35,12 +36,29 @@ export default function Verify() {
   useEffect(() => subscribe((e) => {
     if (e.type !== 'verification') return;
     setProg({ stage: e.stage, progress: e.progress });
-    if (e.stage === 'done' || e.stage === 'error') { loadRuns(); openRun(e.id); setTimeout(() => setProg(null), 600); }
+    if (e.stage === 'done' || e.stage === 'error') {
+      loadRuns(); setTimeout(() => setProg(null), 600);
+      api(`/verifications/${e.id}`).then((v) => {
+        setCurrent(v);
+        if (!autoGo.current) return; autoGo.current = false;
+        if (v.status === 'pass' || v.status === 'warn') { sessionStorage.setItem('pw.selection', JSON.stringify(v.patchIds)); toast('Fixed — verification passed. Continuing to release.', 'good'); go('/releases'); }
+        else toast('Auto-fix re-ran verification but other checks still fail — see below.', 'bad');
+      });
+    }
   }), [subscribe]); // eslint-disable-line
 
   const start = async () => {
     const r = await run('go', () => api(`/sites/${siteId}/verify`, 'POST', { patchIds: [...sel] }));
     if (r) { setProg({ stage: 'queued', progress: 2 }); setCurrent(null); loadRuns(); }
+  };
+  const [fix, setFix] = useState<any>(null);
+  const autoFix = async () => {
+    const f = await run('fix', () => api(`/verifications/${current.id}/fix`, 'POST'));
+    if (!f) return; setFix(f);
+    if (!f.fixable) { toast('No automatic fix found — see the explanation.', 'bad'); return; }
+    setSel(new Set(f.patchIds)); autoGo.current = true;
+    const r = await run('go', () => api(`/sites/${siteId}/verify`, 'POST', { patchIds: f.patchIds }));
+    if (r) { setProg({ stage: 'queued', progress: 2 }); setCurrent(null); loadRuns(); } else autoGo.current = false;
   };
   const toggle = (id: string) => setSel((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const running = !!prog && prog.stage !== 'done';
@@ -76,6 +94,12 @@ export default function Verify() {
           {!running && !rep && <Card><Empty icon={I.ShieldCheck} title="Ready when you are">Select the patches that make up your release and run verification. You’ll get a pass / warn / fail verdict backed by screenshots and flow traces.</Empty></Card>}
 
           {!running && rep && rep.stage === 'error' && <Card><Empty icon={I.CircleAlert} title="Verification could not complete">{rep.error}</Empty></Card>}
+
+          {!running && fix && <Card><div className="col"><div className="row"><I.Sparkles size={16} style={{ color: 'var(--accent)' }} /><b>AI fix {fix.provider === 'claude' ? '(Claude)' : '(rule-based)'}</b></div>
+            <div className="small">{fix.summary}</div>
+            {fix.actions.map((a: any, i: number) => <div key={i} className="row small"><span className={`badge ${a.type === 'add' ? 'good' : 'bad'}`}>{a.type === 'add' ? 'Added back' : 'Removed'}</span><b>{a.title}</b></div>)}</div></Card>}
+
+          {!running && rep?.summary && (rep.summary.fail > 0 || rep.summary.warn > 0) && current?.id && <Card><div className="row between wrap"><div><b>Fix this with AI</b><div className="small muted">Finds the cause of the failing checks, corrects the patch set, re-runs verification and, once it passes, takes you to the release.</div></div><Btn variant="primary" icon={I.Sparkles} loading={busy === 'fix' || busy === 'go'} onClick={autoFix}>Fix with AI and re-verify</Btn></div></Card>}
 
           {!running && rep && rep.checks && rep.summary && <Results run={current} rep={rep} patches={patches} onRelease={() => { sessionStorage.setItem('pw.selection', JSON.stringify(current.patchIds)); go('/releases'); }} />}
         </div>
